@@ -1,0 +1,21 @@
+2011-09-15  GoldenKevin  (revision 1)
+
+	* Initial import. Things currently working:
+		* Can start and stop server processes individually or in a batch manner.
+		Native resource acquisition and release is clean, elegant, and robust.
+		* Launch configurations for processes are customizable - you can specify
+		where each properties file is or where the WZ or scripts folder are.
+		Some preferences are initialized to default values while some require
+		the user to select a path on first startup. All of them can be edited in
+		the GUI later on though.
+		* You can customize the look and feel of the window. Layout is very
+		loose and not at all rigid/absolute - the window will adapt to all
+		platforms and all themes very elegantly.
+		* Window will minimize to tray if functionality is available from the
+		OS. A decent looking tray icon is provided.
+		* A splash screen will assure the user that something is being done
+		behind the scenes before the main window can be displayed.
+
+Copyright 2011 GoldenKevin
+Copying and distribution of this file, with or without modification, are
+permitted provided the copyright notice and this notice are preserved.
