@@ -24,6 +24,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -79,12 +80,15 @@ public abstract class ServerTab extends StreamBasedConsoleTab {
 
 	protected Model state;
 
+	private final AtomicBoolean alreadyCleanedUp;
 	private JLabel status;
 	private StartStopButton button;
 
 	private Process proc;
 
 	protected ServerTab(Model state) {
+		alreadyCleanedUp = new AtomicBoolean(true);
+
 		optionsPane.setLayout(new GridBagLayout());
 
 		this.state = state;
@@ -128,10 +132,12 @@ public abstract class ServerTab extends StreamBasedConsoleTab {
 		changeStatus("Running");
 
 		try {
-			proc = Runtime.getRuntime().exec(Environment.buildCommand(getCommand()));
-			registerReaderStream("stdin", proc.getOutputStream());
-			registerWriterStream("stdout", proc.getInputStream());
-			registerWriterStream("stderr", proc.getErrorStream());
+			ProcessBuilder pb = new ProcessBuilder(Environment.buildCommand(getCommand()));
+			pb.redirectErrorStream(true);
+			alreadyCleanedUp.set(false);
+			proc = pb.start();
+			registerReaderStream(proc.getOutputStream());
+			registerWriterStream(proc.getInputStream());
 		} catch (IOException e) {
 			System.err.println("Error starting up " + getDescription() + " server");
 			e.printStackTrace();
@@ -150,21 +156,23 @@ public abstract class ServerTab extends StreamBasedConsoleTab {
 	}
 
 	@Override
-	protected void streamsClosed() {
-		try {
-			proc.waitFor();
-		} catch (InterruptedException e) {
-			//propagate it further upwards
-			Thread.currentThread().interrupt();
-		}
-		cleanup();
-		SwingUtilities.invokeLater(new Runnable () {
-			@Override
-			public void run() {
-				button.setOff();
-				changeStatus("Exited with status code " + proc.exitValue());
-				state.processEnded(ServerTab.this);
+	protected void streamClosed() {
+		if (alreadyCleanedUp.compareAndSet(false, true)) {
+			cleanup();
+			try {
+				proc.waitFor();
+			} catch (InterruptedException e) {
+				//propagate it further upwards
+				Thread.currentThread().interrupt();
 			}
-		});
+			SwingUtilities.invokeLater(new Runnable () {
+				@Override
+				public void run() {
+					button.setOff();
+					changeStatus("Exited with status code " + proc.exitValue());
+					state.processEnded(ServerTab.this);
+				}
+			});
+		}
 	}
 }

@@ -63,20 +63,22 @@ public abstract class ConsoleTab extends JPanel {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					setCaretPosition(getDocument().getLength() - 1);
+					setCaretPosition(getDocument().getLength());
 				}
 			});
 		}
 	}
 
 	private class InputBox extends JPanel {
+		private JTextField textbox;
+
 		/**
 		 * This method is not thread-safe. It must be called from the Swing EDT.
 		 */
 		public InputBox() {
 			setOpaque(false);
 
-			final JTextField textbox = new JTextField(80);
+			textbox = new JTextField(80);
 			textbox.setFont(Environment.CONSOLE_FONT);
 			textbox.addKeyListener(new KeyListener() {
 				@Override
@@ -94,11 +96,17 @@ public abstract class ConsoleTab extends JPanel {
 					}
 				}
 			});
+			setEnabled(false);
 
 			setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 			add(new JLabel(">"));
 			add(Box.createRigidArea(new Dimension(5, 0)));
 			add(textbox);
+		}
+
+		@Override
+		public void setEnabled(boolean enabled) {
+			textbox.setEnabled(enabled);
 		}
 	}
 
@@ -152,6 +160,24 @@ public abstract class ConsoleTab extends JPanel {
 			public void run() {
 				output.setBackground(Color.WHITE);
 				output.setForeground(Color.BLACK);
+			}
+		});
+	}
+
+	protected void inputEnabled() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				input.setEnabled(true);
+			}
+		});
+	}
+
+	protected void inputDisabled() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				input.setEnabled(false);
 			}
 		});
 	}

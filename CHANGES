@@ -16,6 +16,22 @@
 		* A splash screen will assure the user that something is being done
 		behind the scenes before the main window can be displayed.
 
+2011-09-19  GoldenKevin  (revision 2)
+
+	* Console tabs now should show a blank line after the last line of output
+	* Use ProcessBuilder so that standard error is redirected to merge with
+	standard output (of child process). This way, the BufferedReaders won't
+	cause the input of each stream to be jumbled if they both send us data at
+	almost the same time, and it makes StreamBasedConsoleTab much simpler as it
+	only has to deal with one stream each for input and output.
+	* InputBox's text field is disabled when the input stream is closed. This
+	way, it is symmetrical with OutputBox's disableOutput method and we don't
+	have to perform a null check in StreamBasedConsoleTab.textEntered since the
+	text field should be disabled when openWriter is null, and hence no text can
+	be entered.
+	* Child process stream cleanup should be performed before calling waitFor
+	on the process to avoid having to wait for a long time.
+
 Copyright 2011 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.

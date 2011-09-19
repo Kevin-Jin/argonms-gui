@@ -27,8 +27,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 
@@ -36,109 +35,101 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public abstract class StreamBasedConsoleTab extends ConsoleTab {
-	private final List<Reader> openReaders;
-	private final List<Writer> openWriters;
+	private final AtomicReference<Reader> openReader;
+	private final AtomicReference<Writer> openWriter;
 
 	protected StreamBasedConsoleTab() {
-		openReaders = new ArrayList<Reader>();
-		openWriters = new ArrayList<Writer>();
+		openReader = new AtomicReference<Reader>(null);
+		openWriter = new AtomicReference<Writer>(null);
 	}
 
-	private void readInput(Reader reader) {
+	private void readInput() {
+		Reader inputConsumer = openReader.get();
 		int c;
 		try {
-			while ((c = reader.read()) != -1)
+			while ((c = inputConsumer.read()) != -1)
 				writeToOutput(Character.toString((char) c));
 		} catch (IOException e) {
 			//most likely just that the stream is closed
 			System.err.println("Error in reading from reader stream");
 			e.printStackTrace();
 		} finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				System.err.println("Error in closing reader stream");
-				e.printStackTrace();
-			}
-			inputStreamClosed(reader);
+			//don't use the local variable - we need to fetch from the instance
+			//variable to see if it is already null - if it is, we do not need
+			//to close it since it's null if and only if the reader is already
+			//closed or if the reader is in the process of being closed
+			closeReader();
 		}
 	}
 
 	@Override
 	protected void textEntered(String text) {
-		for (Writer outputListener : openWriters) {
+		Writer outputListener = openWriter.get();
+		try {
+			outputListener.write(text);
+			outputListener.flush();
+		} catch (IOException ex) {
+			//most likely just that the stream is closed
+			System.err.println("Error in writing to writer stream");
+			ex.printStackTrace();
+
+			//don't use the local variable - we need to fetch from the instance
+			//variable to see if it is already null - if it is, we do not need
+			//to close it since it's null if and only if the writer is already
+			//closed or if the writer is in the process of being closed
+			closeWriter();
+		}
+	}
+
+	private void closeReader() {
+		Reader r = openReader.getAndSet(null);
+		if (r != null) {
 			try {
-				outputListener.write(text);
-				outputListener.flush();
-			} catch (IOException ex) {
-				//most likely just that the stream is closed
-				System.err.println("Error in writing to writer stream");
-				ex.printStackTrace();
-				try {
-					outputListener.close();
-					streamsClosed();
-				} catch (IOException e) {
-					System.err.println("Error in closing writer stream");
-					e.printStackTrace();
-				}
+				r.close();
+			} catch (IOException e) {
+				System.err.println("Error in closing reader stream");
+				e.printStackTrace();
 			}
-		}
-	}
-
-	private void inputStreamOpened(Reader reader) {
-		boolean firstStreamOpened;
-		synchronized (openReaders) {
-			openReaders.add(reader);
-			firstStreamOpened = (openReaders.size() == 1);
-		}
-		if (firstStreamOpened)
-			outputEnabled();
-	}
-
-	private void inputStreamClosed(Reader reader) {
-		boolean lastStreamClosed;
-		synchronized (openReaders) {
-			openReaders.remove(reader);
-			lastStreamClosed = (openReaders.size() == 0);
-		}
-		if (lastStreamClosed) {
 			outputDisabled();
-			streamsClosed();
+			streamClosed();
 		}
 	}
 
-	protected void registerReaderStream(String name, OutputStream stream) {
-		synchronized (openWriters) {
-			openWriters.add(new BufferedWriter(new OutputStreamWriter(stream)));
+	private void closeWriter() {
+		Writer w = openWriter.getAndSet(null);
+		if (w != null) {
+			try {
+				w.close();
+			} catch (IOException e) {
+				System.err.println("Error in closing writer stream");
+				e.printStackTrace();
+			}
+			inputDisabled();
+			streamClosed();
 		}
 	}
 
-	protected void registerWriterStream(String name, final InputStream stream) {
-		final Reader reader = new BufferedReader(new InputStreamReader(stream));
-		inputStreamOpened(reader);
+	protected void registerReaderStream(OutputStream stream) {
+		openWriter.set(new BufferedWriter(new OutputStreamWriter(stream)));
+		inputEnabled();
+	}
+
+	protected void registerWriterStream(final InputStream stream) {
+		openReader.set(new BufferedReader(new InputStreamReader(stream)));
+		outputEnabled();
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				readInput(reader);
+				readInput();
 			}
-		}, name + "-reader").start();
+		}, "stream-reader").start();
 	}
 
 	protected void cleanup() {
-		try {
-			synchronized (openReaders) {
-				for (Reader openReader : openReaders)
-					openReader.close();
-			}
-			synchronized (openWriters) {
-				for (Writer openWriter : openWriters)
-					openWriter.close();
-			}
-		} catch (IOException e) {
-			System.err.println("Error in cleanup");
-			e.printStackTrace();
-		}
+		closeReader();
+		closeWriter();
 	}
 
-	protected abstract void streamsClosed();
+	protected abstract void streamClosed();
 }
