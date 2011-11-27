@@ -27,7 +27,7 @@ import java.awt.Font;
 public class Environment {
 	public enum OperatingSystem { WINDOWS, LINUX, MAC_OS_X, UNIX }
 
-	public static final String PROPERTIES_FILE = "launcher.properties";
+	public static final String DEFAULT_PROPS_FILE = "launcher.properties";
 	public static final Font CONSOLE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
 	public static final int MAX_HEAP_SIZE = 600; //in mb

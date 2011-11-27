@@ -20,10 +20,8 @@ package argonms.gui.model;
 
 import java.awt.Window;
 import java.util.Iterator;
-import java.util.Queue;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -39,6 +37,9 @@ import argonms.gui.tab.MainTab;
 import argonms.gui.tab.ServerTab;
 import argonms.gui.tab.ShopServerTab;
 import argonms.gui.tab.TelnetTab;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 
@@ -48,8 +49,8 @@ public class Model {
 	private final Configuration config;
 	private JTabbedPane view;
 	private JFrame frame;
-	private final Queue<ServerTab> runningServers;
-	private final Queue<ServerTab> idleServers;
+	private final Set<ServerTab> runningServers;
+	private final Set<ServerTab> idleServers;
 	private final SortedMap<Byte, GameServerTab> gameTabs;
 	private MainTab startTab;
 	private LoginServerTab loginTab;
@@ -61,8 +62,8 @@ public class Model {
 		config = cfg;
 		//not for thread safety, but for the weakly consistent iterators
 		//(we may remove an element while iterating over it on the same thread)
-		runningServers = new ConcurrentLinkedQueue<ServerTab>();
-		idleServers = new ConcurrentLinkedQueue<ServerTab>();
+		runningServers = Collections.newSetFromMap(new ConcurrentHashMap<ServerTab, Boolean>());
+		idleServers = Collections.newSetFromMap(new ConcurrentHashMap<ServerTab, Boolean>());
 		gameTabs = new TreeMap<Byte, GameServerTab>();
 	}
 

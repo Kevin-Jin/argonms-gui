@@ -44,6 +44,7 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
 import argonms.gui.model.Configuration;
+import argonms.gui.model.Environment;
 import argonms.gui.model.Model;
 
 /**
@@ -58,7 +59,7 @@ public class Main {
 		System.exit(0);
 	}
 
-	private static Model load(Container popup, final JLabel message) throws InterruptedException, InvocationTargetException {
+	private static Model load(Container popup, final JLabel message, final String[] args) throws InterruptedException, InvocationTargetException {
 		//wrapper object that we can pass to the anonymous classes.
 		//this allows us to access objects created inside them.
 		final AtomicReference<Configuration> config = new AtomicReference<Configuration>(null);
@@ -66,7 +67,7 @@ public class Main {
 			@Override
 			public void run() {
 				message.setText("Reading properties...");
-				config.set(new Configuration());
+				config.set(new Configuration(args.length > 0 ? args[0] : Environment.DEFAULT_PROPS_FILE));
 			}
 		});
 		config.get().initialize(popup);
@@ -274,7 +275,7 @@ public class Main {
 				progressIndicator.set(message);
 			}
 		});
-		final Model m = load(splash.get(), progressIndicator.get());
+		final Model m = load(splash.get(), progressIndicator.get(), args);
 
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override

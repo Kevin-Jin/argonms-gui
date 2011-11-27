@@ -110,6 +110,7 @@ public class Configuration {
 		}
 	}
 
+	private final String propsFileName;
 	private final JFileChooser fChoose;
 	private final FileFilter propsFilter;
 	private final FileFilter classPathFilter;
@@ -131,7 +132,8 @@ public class Configuration {
 	/**
 	 * This method is not thread-safe. It must be called from the Swing EDT.
 	 */
-	public Configuration() {
+	public Configuration(String propsFile) {
+		propsFileName = propsFile;
 		fChoose = new JFileChooser();
 		propsFilter = new FileNameExtensionFilter("Java Properties Files (.properties)", "properties");
 		classPathFilter = new FileNameExtensionFilter("Java Archives (.jar) and class folders", "jar");
@@ -169,11 +171,11 @@ public class Configuration {
 
 	public void initialize(final Container parent) {
 		try {
-			props.load(new FileReader(Environment.PROPERTIES_FILE));
+			props.load(new FileReader(propsFileName));
 		} catch (FileNotFoundException e) {
 			//this is expected...
 		} catch (IOException e) {
-			System.err.println("Error reading " + Environment.PROPERTIES_FILE);
+			System.err.println("Error reading " + propsFileName);
 			e.printStackTrace();
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -419,22 +421,6 @@ public class Configuration {
 					props.setProperty("argonms.gui.bin.classpath", createList(selected));
 					doStore = true;
 				}
-				if (dbPropPath == null) {
-					String selected = safePromptForPropsFile(parent, "Select your db.properties file");
-					if (selected == null)
-						return false;
-					dbPropPath = selected;
-					props.setProperty("argonms.gui.database.properties", selected);
-					doStore = true;
-				}
-				if (loggerPropPath == null) {
-					String selected = safePromptForPropsFile(parent, "Select your logging.properties file");
-					if (selected == null)
-						return false;
-					loggerPropPath = selected;
-					props.setProperty("argonms.gui.logger.properties", selected);
-					doStore = true;
-				}
 				if (wzPath == null) {
 					String selected = safePromptForDirectory(parent, "Select your WZ data folder");
 					if (selected == null)
@@ -449,6 +435,22 @@ public class Configuration {
 						return false;
 					scriptsPath = selected;
 					props.setProperty("argonms.gui.scripts.location", selected);
+					doStore = true;
+				}
+				if (dbPropPath == null) {
+					String selected = safePromptForPropsFile(parent, "Select your db.properties file");
+					if (selected == null)
+						return false;
+					dbPropPath = selected;
+					props.setProperty("argonms.gui.database.properties", selected);
+					doStore = true;
+				}
+				if (loggerPropPath == null) {
+					String selected = safePromptForPropsFile(parent, "Select your logging.properties file");
+					if (selected == null)
+						return false;
+					loggerPropPath = selected;
+					props.setProperty("argonms.gui.logger.properties", selected);
 					doStore = true;
 				}
 				if (enabledGameServers == null) {
@@ -497,7 +499,7 @@ public class Configuration {
 				}
 			} finally {
 				if (doStore)
-					props.store(new FileWriter(Environment.PROPERTIES_FILE), null);
+					props.store(new FileWriter(propsFileName), null);
 			}
 			return true;
 		} catch (final Throwable e) {
@@ -535,7 +537,7 @@ public class Configuration {
 			for (Entry<String, String> entry : updatedProps.entrySet())
 				props.setProperty(entry.getKey(), entry.getValue());
 			try {
-				props.store(new FileWriter(Environment.PROPERTIES_FILE), null);
+				props.store(new FileWriter(propsFileName), null);
 			} catch (IOException e) {
 				System.err.println("Error updating properties");
 				e.printStackTrace();

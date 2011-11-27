@@ -43,7 +43,7 @@ import argonms.gui.model.Environment;
  */
 @SuppressWarnings("serial")
 public abstract class ConsoleTab extends JPanel {
-	private class OutputBox extends JTextArea {
+	private static class OutputBox extends JTextArea {
 		/**
 		 * This method is not thread-safe. It must be called from the Swing EDT.
 		 */
@@ -105,7 +105,7 @@ public abstract class ConsoleTab extends JPanel {
 		}
 
 		@Override
-		public void setEnabled(boolean enabled) {
+		public final void setEnabled(boolean enabled) {
 			textbox.setEnabled(enabled);
 		}
 	}
