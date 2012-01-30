@@ -48,6 +48,10 @@
 	variables of a ConsoleTab instance. ConsoleTab.InputBox.setEnabled() is made
 	final since NetBeans complains about using overridable methods in a ctor.
 
-Copyright 2011 GoldenKevin
+2012-01-29  GoldenKevin  (revision 4)
+
+	* Updated copyright years.
+
+Copyright 2011-2012 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.
