@@ -52,6 +52,10 @@
 
 	* Updated copyright years.
 
+2012-03-26  GoldenKevin  (revision 5)
+
+	* Made ServerGuiNg.jar executable on Linux.
+
 Copyright 2011-2012 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.
