@@ -1,4 +1,9 @@
-2011-09-15  GoldenKevin  (revision 1)
+2012-07-14  GoldenKevin  (revision 1)
+
+	* Created /trunk folder to make layout more compliant with SVN best
+	practices.
+
+2011-09-15  GoldenKevin  (revision 2)
 
 	* Initial import. Things currently working:
 		* Can start and stop server processes individually or in a batch manner.
@@ -16,7 +21,7 @@
 		* A splash screen will assure the user that something is being done
 		behind the scenes before the main window can be displayed.
 
-2011-09-19  GoldenKevin  (revision 2)
+2011-09-19  GoldenKevin  (revision 3)
 
 	* Console tabs now should show a blank line after the last line of output
 	* Use ProcessBuilder so that standard error is redirected to merge with
@@ -32,7 +37,7 @@
 	* Child process stream cleanup should be performed before calling waitFor
 	on the process to avoid having to wait for a long time.
 
-2011-11-27  GoldenKevin  (revision 3)
+2011-11-27  GoldenKevin  (revision 4)
 
 	* You can specify the path of the launcher properties file now instead of
 	being limited to a file named launcher.properties in the current directory
@@ -48,13 +53,18 @@
 	variables of a ConsoleTab instance. ConsoleTab.InputBox.setEnabled() is made
 	final since NetBeans complains about using overridable methods in a ctor.
 
-2012-01-29  GoldenKevin  (revision 4)
+2012-01-29  GoldenKevin  (revision 5)
 
 	* Updated copyright years.
 
-2012-03-26  GoldenKevin  (revision 5)
+2012-03-26  GoldenKevin  (revision 6)
 
 	* Made ServerGuiNg.jar executable on Linux.
+
+2012-07-14  GoldenKevin  (revision 7)
+
+	* Corrected changelog revision numbers after moving / to /trunk.
+	* Renamed ServerGuiNg.jar to amsgui.jar.
 
 Copyright 2011-2012 GoldenKevin
 Copying and distribution of this file, with or without modification, are
