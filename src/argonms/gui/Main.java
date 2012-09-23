@@ -34,7 +34,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -62,31 +61,31 @@ public class Main {
 	private static Model load(Container popup, final JLabel message, final String[] args) throws InterruptedException, InvocationTargetException {
 		//wrapper object that we can pass to the anonymous classes.
 		//this allows us to access objects created inside them.
-		final AtomicReference<Configuration> config = new AtomicReference<Configuration>(null);
+		final Configuration[] config = new Configuration[1];
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
 				message.setText("Reading properties...");
-				config.set(new Configuration(args.length > 0 ? args[0] : Environment.DEFAULT_PROPS_FILE));
+				config[0] = new Configuration(args.length > 0 ? args[0] : Environment.DEFAULT_PROPS_FILE);
 			}
 		});
-		config.get().initialize(popup);
+		config[0].initialize(popup);
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
 				message.setText("Assigning uninitialized properties...");
 			}
 		});
-		if (!config.get().checkUnsetProperties(popup))
+		if (!config[0].checkUnsetProperties(popup))
 			return null;
-		final Model m = new Model(config.get());
+		final Model m = new Model(config[0]);
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
 				message.setText("Applying properties...");
 				JTabbedPane pane = new JTabbedPane();
 				m.setView(pane);
-				config.get().apply(m);
+				config[0].apply(m);
 			}
 		});
 		return m;
@@ -262,8 +261,8 @@ public class Main {
 	public static void main(String[] args) throws InterruptedException, InvocationTargetException {
 		//some wrapper objects that we can pass to the anonymous classes.
 		//this allows us to access objects created inside them.
-		final AtomicReference<JWindow> splash = new AtomicReference<JWindow>(null);
-		final AtomicReference<JLabel> progressIndicator = new AtomicReference<JLabel>(null);
+		final JWindow[] splash = new JWindow[1];
+		final JLabel[] progressIndicator = new JLabel[1];
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
@@ -271,23 +270,23 @@ public class Main {
 				JWindow popup = constructSplash(message);
 				popup.setVisible(true);
 
-				splash.set(popup);
-				progressIndicator.set(message);
+				splash[0] = popup;
+				progressIndicator[0] = message;
 			}
 		});
-		final Model m = load(splash.get(), progressIndicator.get(), args);
+		final Model m = load(splash[0], progressIndicator[0], args);
 
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
 				if (m != null) {
-					JFrame window = constructWindow(m, progressIndicator.get());
+					JFrame window = constructWindow(m, progressIndicator[0]);
 					m.setFrame(window);
 					window.pack();
 					window.setVisible(true);
 				}
-				splash.get().setVisible(false);
-				splash.get().dispose();
+				splash[0].setVisible(false);
+				splash[0].dispose();
 			}
 		});
 	}

@@ -34,6 +34,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultCaret;
 
 import argonms.gui.model.Environment;
 
@@ -49,23 +50,14 @@ public abstract class ConsoleTab extends JPanel {
 		 */
 		public OutputBox() {
 			super(25, 80);
+			((DefaultCaret) getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
 			setFont(Environment.CONSOLE_FONT);
 			setEditable(false);
 			setLineWrap(true);
 
 			setBackground(Color.WHITE);
 			setForeground(Color.BLACK);
-		}
-
-		public void write(String text) {
-			append(text);
-			//while append is thread-safe, setCaretPosition is not...
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					setCaretPosition(getDocument().getLength());
-				}
-			});
 		}
 	}
 
@@ -183,7 +175,7 @@ public abstract class ConsoleTab extends JPanel {
 	}
 
 	protected void writeToOutput(String text) {
-		output.write(text);
+		output.append(text);
 	}
 
 	protected abstract void textEntered(String text);

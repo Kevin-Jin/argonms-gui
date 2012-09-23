@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -274,27 +273,27 @@ public class Configuration {
 	private String safePromptForDirectory(final Component parent, final String prompt) throws Throwable {
 		//some wrapper objects that we can pass to the anonymous classes.
 		//this allows us to access objects created inside them.
-		final AtomicReference<String> result = new AtomicReference<String>(null);
-		final AtomicReference<Throwable> exception = new AtomicReference<Throwable>(null);
+		final String[] result = new String[1];
+		final Throwable[] exception = new Throwable[1];
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						result.set(promptForDirectory(parent, prompt));
+						result[0] = promptForDirectory(parent, prompt);
 					} catch (IOException e) {
-						exception.set(e);
+						exception[0] = e;
 					}
 				}
 			});
 		} catch (InterruptedException e) {
-			exception.set(e);
+			exception[0] = e;
 		} catch (InvocationTargetException e) {
-			exception.set(e.getCause());
+			exception[0] = e.getCause();
 		}
-		if (exception.get() != null)
-			throw exception.get();
-		return result.get();
+		if (exception[0] != null)
+			throw exception[0];
+		return result[0];
 	}
 
 	/**
@@ -321,27 +320,27 @@ public class Configuration {
 	private String safePromptForPropsFile(final Component parent, final String prompt) throws Throwable {
 		//some wrapper objects that we can pass to the anonymous classes.
 		//this allows us to access objects created inside them.
-		final AtomicReference<String> result = new AtomicReference<String>(null);
-		final AtomicReference<Throwable> exception = new AtomicReference<Throwable>(null);
+		final String[] result = new String[1];
+		final Throwable[] exception = new Throwable[1];
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						result.set(promptForPropsFile(parent, prompt));
+						result[0] = promptForPropsFile(parent, prompt);
 					} catch (IOException e) {
-						exception.set(e);
+						exception[0] = e;
 					}
 				}
 			});
 		} catch (InterruptedException e) {
-			exception.set(e);
+			exception[0] = e;
 		} catch (InvocationTargetException e) {
-			exception.set(e.getCause());
+			exception[0] = e.getCause();
 		}
-		if (exception.get() != null)
-			throw exception.get();
-		return result.get();
+		if (exception[0] != null)
+			throw exception[0];
+		return result[0];
 	}
 
 	//TODO: allow approve when there is no selection
@@ -374,27 +373,27 @@ public class Configuration {
 	private String[] safePromptForClasspath(final Component parent, final String prompt) throws Throwable {
 		//some wrapper objects that we can pass to the anonymous classes.
 		//this allows us to access objects created inside them.
-		final AtomicReference<String[]> result = new AtomicReference<String[]>(null);
-		final AtomicReference<Throwable> exception = new AtomicReference<Throwable>(null);
+		final String[][] result = new String[1][];
+		final Throwable[] exception = new Throwable[1];
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						result.set(promptForClasspath(parent, prompt));
+						result[0] = promptForClasspath(parent, prompt);
 					} catch (IOException e) {
-						exception.set(e);
+						exception[0] = e;
 					}
 				}
 			});
 		} catch (InterruptedException e) {
-			exception.set(e);
+			exception[0] = e;
 		} catch (InvocationTargetException e) {
-			exception.set(e.getCause());
+			exception[0] = e.getCause();
 		}
-		if (exception.get() != null)
-			throw exception.get();
-		return result.get();
+		if (exception[0] != null)
+			throw exception[0];
+		return result[0];
 	}
 
 	private String createList(String[] list) {

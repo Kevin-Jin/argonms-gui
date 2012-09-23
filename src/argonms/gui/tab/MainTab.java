@@ -111,7 +111,7 @@ public class MainTab extends JPanel {
 		JPanel pane = new JPanel();
 		pane.setOpaque(false);
 		pane.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createLineBorder(Color.black), "Server Status"));
+				BorderFactory.createLineBorder(Color.black), "Server Operation"));
 
 		startAll = new JButton("Start All");
 		startAll.addActionListener(new ActionListener() {

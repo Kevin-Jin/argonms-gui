@@ -66,6 +66,21 @@
 	* Corrected changelog revision numbers after moving / to /trunk.
 	* Renamed ServerGuiNg.jar to amsgui.jar.
 
+2012-09-23  GoldenKevin  (revision 8)
+
+	* Use more lightweight one element arrays rather than AtomicReferences when
+	declaring final variables that can be used to share data between EDT in
+	SwingUtilities.invokeAndWait and code in the calling thread.
+	* ConsoleTab.OutputBox.caret's update policy is set to ALWAYS_UPDATE so we
+	can avoid having to call ConsoleTab.OutputBox.setCaretPosition(getDocument()
+	.getLength()) on the EDT after every call to Console.OutputBox.append.
+	Handles thread-safety a bit better (caret is updated in the same mutex as
+	OutputBox.append), avoids EDT scheduling on a very frequent event, and
+	eliminates the need to remember to call the same code after every append if
+	we plan on making more complex subclasses of ConsoleTab. Note this update
+	requires Java 5, but that's a non-problem since ArgonMS requires Java 6.
+	* Server Status label in Main tab now is Server Operation.
+
 Copyright 2011-2012 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.
