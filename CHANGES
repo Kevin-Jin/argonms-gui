@@ -81,6 +81,10 @@
 	requires Java 5, but that's a non-problem since ArgonMS requires Java 6.
 	* Server Status label in Main tab now is Server Operation.
 
-Copyright 2011-2012 GoldenKevin
+2013-02-04  GoldenKevin  (revision 9)
+
+	* Updated copyright years.
+
+Copyright 2011-2013 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.
