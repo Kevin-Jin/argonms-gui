@@ -112,12 +112,14 @@ public class Configuration {
 	private final String propsFileName;
 	private final JFileChooser fChoose;
 	private final FileFilter propsFilter;
+	private final FileFilter textFileFilter;
 	private final FileFilter classPathFilter;
 	private final Properties props;
 
 	private String[] classPath;
 	private String dbPropPath;
 	private String loggerPropPath;
+	private String macBanBlacklistPath;
 	private String wzPath;
 	private String scriptsPath;
 	private byte[] enabledGameServers;
@@ -135,6 +137,7 @@ public class Configuration {
 		propsFileName = propsFile;
 		fChoose = new JFileChooser();
 		propsFilter = new FileNameExtensionFilter("Java Properties Files (.properties)", "properties");
+		textFileFilter = new FileNameExtensionFilter("Plain text file (.txt)", "txt");
 		classPathFilter = new FileNameExtensionFilter("Java Archives (.jar) and class folders", "jar");
 		props = new Properties();
 		gamePropPaths = new HashMap<Byte, String>();
@@ -197,6 +200,9 @@ public class Configuration {
 			} else if (splittedKey[2].equals("logger")) {
 				if (splittedKey[3].equals("properties"))
 					loggerPropPath = (String) prop.getValue();
+			} else if (splittedKey[2].equals("cheattracker")) {
+				if (splittedKey[3].equals("macbanblacklist"))
+					macBanBlacklistPath = (String) prop.getValue();
 			} else if (splittedKey[2].equals("wz")) {
 				if (splittedKey[3].equals("location"))
 					wzPath = (String) prop.getValue();
@@ -312,6 +318,53 @@ public class Configuration {
 		} finally {
 			fChoose.removeChoosableFileFilter(propsFilter);
 		}
+	}
+
+	/**
+	 * This method is not thread-safe. It must be called from the Swing EDT.
+	 */
+	public String promptForTextFile(Component parent, String prompt) throws IOException {
+		fChoose.setDialogTitle(prompt);
+		fChoose.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fChoose.addChoosableFileFilter(textFileFilter);
+		int returnVal = fChoose.showDialog(parent, "Select");
+		try {
+			if (returnVal == JFileChooser.APPROVE_OPTION)
+				return fChoose.getSelectedFile().getCanonicalPath();
+			else
+				return null;
+		} finally {
+			fChoose.removeChoosableFileFilter(propsFilter);
+		}
+	}
+
+	/**
+	 * Do not invoke this from the Swing EDT, or else a deadlock may result.
+	 */
+	private String safePromptForTextFile(final Component parent, final String prompt) throws Throwable {
+		//some wrapper objects that we can pass to the anonymous classes.
+		//this allows us to access objects created inside them.
+		final String[] result = new String[1];
+		final Throwable[] exception = new Throwable[1];
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						result[0] = promptForTextFile(parent, prompt);
+					} catch (IOException e) {
+						exception[0] = e;
+					}
+				}
+			});
+		} catch (InterruptedException e) {
+			exception[0] = e;
+		} catch (InvocationTargetException e) {
+			exception[0] = e.getCause();
+		}
+		if (exception[0] != null)
+			throw exception[0];
+		return result[0];
 	}
 
 	/**
@@ -452,6 +505,14 @@ public class Configuration {
 					props.setProperty("argonms.gui.logger.properties", selected);
 					doStore = true;
 				}
+				if (macBanBlacklistPath == null) {
+					String selected = safePromptForTextFile(parent, "Select your macbanblacklist.txt file");
+					if (selected == null)
+						return false;
+					macBanBlacklistPath = selected;
+					props.setProperty("argonms.gui.cheattracker.macbanblacklist", selected);
+					doStore = true;
+				}
 				if (enabledGameServers == null) {
 					props.setProperty("argonms.gui.game.run", "0");
 					enabledGameServers = new byte[] { 0 };
@@ -570,6 +631,10 @@ public class Configuration {
 
 	public String getLoggerPropertiesPath() {
 		return loggerPropPath;
+	}
+
+	public String getMacBanBlacklistPath() {
+		return macBanBlacklistPath;
 	}
 
 	public String getWzPath() {

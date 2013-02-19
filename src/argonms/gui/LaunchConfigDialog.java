@@ -158,6 +158,14 @@ public class LaunchConfigDialog extends JDialog {
 		c.gridy = 5;
 		c.weightx = 0;
 		add(constructDatabasePropertiesPanel(), c);
+		c.anchor = GridBagConstraints.LAST_LINE_START;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.gridy = 6;
+		c.weightx = 0;
+		add(constructMacBanBlacklistPathPanel(), c);
 
 		//right column
 		c.anchor = GridBagConstraints.FIRST_LINE_END;
@@ -748,6 +756,42 @@ public class LaunchConfigDialog extends JDialog {
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting logging.properties");
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(
+						LaunchConfigDialog.this,
+						"Error while changing settings: " + ex,
+						"Settings Changing Error",
+						JOptionPane.ERROR_MESSAGE
+					);
+				}
+			}
+
+			public void mousePressed(MouseEvent e) { }
+
+			public void mouseReleased(MouseEvent e) { }
+
+			public void mouseEntered(MouseEvent e) { }
+
+			public void mouseExited(MouseEvent e) { }
+		});
+	}
+
+	/**
+	 * This method is not thread-safe. It must be called from the Swing EDT.
+	 */
+	private JPanel constructMacBanBlacklistPathPanel() {
+		final JTextField textbox = new JTextField();
+		return constructSimplePathSubPanel("Cheat Tracker", "MAC Ban Blacklist:", textbox, m.getConfig().getMacBanBlacklistPath(), new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				try {
+					String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your macbanblacklist.txt file");
+					if (selected != null) {
+						textbox.setText(selected);
+						changes.put("argonms.gui.cheattracker.macbanblacklist", selected);
+						applyButton.setEnabled(true);
+					}
+				} catch (IOException ex) {
+					System.err.println("Error in selecting macbanblacklist.txt");
 					ex.printStackTrace();
 					JOptionPane.showMessageDialog(
 						LaunchConfigDialog.this,

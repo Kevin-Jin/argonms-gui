@@ -48,6 +48,7 @@ public class LoginServerTab extends ServerTab {
 			"-Dargonms.login.config.file=" + state.getConfig().getLoginServerPropertiesPath(),
 			"-Djava.util.logging.config.file=" + state.getConfig().getLoggerPropertiesPath(),
 			"-Dargonms.db.config.file=" + state.getConfig().getDatabasePropertiesPath(),
+			"-Dargonms.ct.macbanblacklist.file=" + state.getConfig().getMacBanBlacklistPath(),
 			"-Dargonms.data.dir=" + state.getConfig().getWzPath(),
 			"argonms.login.LoginServer"
 		};

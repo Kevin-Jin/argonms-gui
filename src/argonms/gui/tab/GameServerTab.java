@@ -52,6 +52,7 @@ public class GameServerTab extends ServerTab {
 			"-Dargonms.game.config.file=" + state.getConfig().getGameServerPropertiesPath(serverId),
 			"-Djava.util.logging.config.file=" + state.getConfig().getLoggerPropertiesPath(),
 			"-Dargonms.db.config.file=" + state.getConfig().getDatabasePropertiesPath(),
+			"-Dargonms.ct.macbanblacklist.file=" + state.getConfig().getMacBanBlacklistPath(),
 			"-Dargonms.data.dir=" + state.getConfig().getWzPath(),
 			"-Dargonms.scripts.dir=" + state.getConfig().getScriptsPath(),
 			"argonms.game.GameServer"

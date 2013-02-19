@@ -48,6 +48,7 @@ public class CenterServerTab extends ServerTab {
 			"-Dargonms.center.config.file=" + state.getConfig().getCenterServerPropertiesPath(),
 			"-Djava.util.logging.config.file=" + state.getConfig().getLoggerPropertiesPath(),
 			"-Dargonms.db.config.file=" + state.getConfig().getDatabasePropertiesPath(),
+			"-Dargonms.ct.macbanblacklist.file=" + state.getConfig().getMacBanBlacklistPath(),
 			"argonms.center.CenterServer"
 		};
 	}
