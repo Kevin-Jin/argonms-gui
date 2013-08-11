@@ -49,6 +49,7 @@ public class ShopServerTab extends ServerTab {
 			"-Djava.util.logging.config.file=" + state.getConfig().getLoggerPropertiesPath(),
 			"-Dargonms.db.config.file=" + state.getConfig().getDatabasePropertiesPath(),
 			"-Dargonms.ct.macbanblacklist.file=" + state.getConfig().getMacBanBlacklistPath(),
+			"-Dargonms.shop.blockedserials.file=" + state.getConfig().getBlockedCashSerialsPath(),
 			"-Dargonms.data.dir=" + state.getConfig().getWzPath(),
 			"argonms.shop.ShopServer"
 		};

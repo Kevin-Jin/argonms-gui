@@ -300,12 +300,14 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructShopServerPanel() {
 		JPanel shopServerPanel = new JPanel();
-		shopServerPanel.setLayout(new GridLayout(2, 1, 5, 5));
+		shopServerPanel.setLayout(new GridLayout(3, 1, 5, 5));
 		shopServerPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createLineBorder(Color.BLACK), "Shop"));
 		final JCheckBox chkRun = new JCheckBox("Run shop server", null, m.getConfig().isShopEnabled());
 		final JLabel shopPropsLbl = new JLabel("Shop Properties:");
 		final JTextField shopPropsUrl = new JTextField(m.getConfig().getShopServerPropertiesPath(), 10);
+		final JLabel blockedSerialsLbl = new JLabel("Blocked SNs:");
+		final JTextField blockedSerialsUrl = new JTextField(m.getConfig().getBlockedCashSerialsPath(), 10);
 		chkRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (chkRun.isSelected()) {
@@ -320,8 +322,27 @@ public class LaunchConfigDialog extends JDialog {
 							shopPropsUrl.setText(selected);
 							changes.put("argonms.gui.shop.properties", selected);
 							applyButton.setEnabled(true);
+
+							selected = m.getConfig().getBlockedCashSerialsPath();
+							if (selected == null)
+								selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your blockedcashshopserialnumbers.txt file");
+							if (selected != null) {
+								blockedSerialsUrl.setEnabled(true);
+								blockedSerialsLbl.setEnabled(true);
+								changes.put("argonms.gui.shop.run", "true");
+								blockedSerialsUrl.setText(selected);
+								changes.put("argonms.gui.shop.blockedserials", selected);
+								applyButton.setEnabled(true);
+							} else {
+								blockedSerialsUrl.setEnabled(false);
+								blockedSerialsLbl.setEnabled(false);
+								blockedSerialsUrl.setText(null);
+								chkRun.setSelected(false);
+							}
 						} else {
 							shopPropsUrl.setEnabled(false);
+							shopPropsLbl.setEnabled(false);
+							shopPropsUrl.setText(null);
 							chkRun.setSelected(false);
 						}
 					} catch (IOException ex) {
@@ -338,6 +359,8 @@ public class LaunchConfigDialog extends JDialog {
 				} else {
 					shopPropsUrl.setEnabled(false);
 					shopPropsLbl.setEnabled(false);
+					blockedSerialsUrl.setEnabled(false);
+					blockedSerialsLbl.setEnabled(false);
 					changes.put("argonms.gui.shop.run", "false");
 					applyButton.setEnabled(true);
 				}
@@ -346,9 +369,13 @@ public class LaunchConfigDialog extends JDialog {
 		if (chkRun.isSelected()) {
 			shopPropsUrl.setEnabled(true);
 			shopPropsLbl.setEnabled(true);
+			blockedSerialsUrl.setEnabled(true);
+			blockedSerialsLbl.setEnabled(true);
 		} else {
 			shopPropsUrl.setEnabled(false);
 			shopPropsLbl.setEnabled(false);
+			blockedSerialsUrl.setEnabled(false);
+			blockedSerialsLbl.setEnabled(false);
 		}
 		shopPropsUrl.setEditable(false);
 		shopPropsUrl.addMouseListener(new MouseListener() {
@@ -383,12 +410,50 @@ public class LaunchConfigDialog extends JDialog {
 			public void mouseExited(MouseEvent e) { }
 		});
 
+		blockedSerialsUrl.setEditable(false);
+		blockedSerialsUrl.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if (blockedSerialsUrl.isEnabled()) {
+					try {
+						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your blockedcashshopserialnumbers.txt file");
+						if (selected != null) {
+							blockedSerialsUrl.setText(selected);
+							changes.put("argonms.gui.shop.blockedserials", selected);
+							applyButton.setEnabled(true);
+						}
+					} catch (IOException ex) {
+						System.err.println("Error in selecting blockedcashshopserialnumbers.txt");
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(
+							LaunchConfigDialog.this,
+							"Error while changing settings: " + ex,
+							"Settings Changing Error",
+							JOptionPane.ERROR_MESSAGE
+						);
+					}
+				}
+			}
+
+			public void mousePressed(MouseEvent e) { }
+
+			public void mouseReleased(MouseEvent e) { }
+
+			public void mouseEntered(MouseEvent e) { }
+
+			public void mouseExited(MouseEvent e) { }
+		});
+
 		//layout and place on panel
+		shopServerPanel.add(chkRun);
 		JPanel urlPanel = new JPanel();
 		urlPanel.setLayout(new GridLayout(1, 2));
 		urlPanel.add(shopPropsLbl);
 		urlPanel.add(shopPropsUrl);
-		shopServerPanel.add(chkRun);
+		shopServerPanel.add(urlPanel);
+		urlPanel = new JPanel();
+		urlPanel.setLayout(new GridLayout(1, 2));
+		urlPanel.add(blockedSerialsLbl);
+		urlPanel.add(blockedSerialsUrl);
 		shopServerPanel.add(urlPanel);
 		return shopServerPanel;
 	}

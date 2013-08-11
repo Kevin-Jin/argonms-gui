@@ -127,6 +127,7 @@ public class Configuration {
 	private String loginPropPath;
 	private boolean shopEnabled;
 	private String shopPropPath;
+	private String blockedCsSnsPath;
 	private String centerPropPath;
 	private String lookAndFeel;
 
@@ -231,8 +232,10 @@ public class Configuration {
 			} else if (splittedKey[2].equals("shop")) {
 				if (splittedKey[3].equals("run"))
 					shopEnabled = Boolean.parseBoolean((String) prop.getValue());
-				if (splittedKey[3].equals("properties"))
+				else if (splittedKey[3].equals("properties"))
 					shopPropPath = (String) prop.getValue();
+				else if (splittedKey[3].equals("blockedserials"))
+					blockedCsSnsPath = (String) prop.getValue();
 			} else if (splittedKey[2].equals("center")) {
 				if (splittedKey[3].equals("properties"))
 					centerPropPath = (String) prop.getValue();
@@ -544,6 +547,14 @@ public class Configuration {
 					props.setProperty("argonms.gui.shop.properties", selected);
 					doStore = true;
 				}
+				if (shopEnabled && blockedCsSnsPath == null) {
+					String selected = safePromptForTextFile(parent, "Select your blockedcashshopserialnumbers.txt file");
+					if (selected == null)
+						return false;
+					blockedCsSnsPath = selected;
+					props.setProperty("argonms.gui.shop.blockedserials", selected);
+					doStore = true;
+				}
 				if (centerPropPath == null) {
 					String selected = safePromptForPropsFile(parent, "Select your center.properties file");
 					if (selected == null)
@@ -655,6 +666,10 @@ public class Configuration {
 
 	public String getShopServerPropertiesPath() {
 		return shopPropPath;
+	}
+
+	public String getBlockedCashSerialsPath() {
+		return blockedCsSnsPath;
 	}
 
 	public String getCenterServerPropertiesPath() {
