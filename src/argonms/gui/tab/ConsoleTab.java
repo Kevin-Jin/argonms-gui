@@ -19,22 +19,29 @@
 package argonms.gui.tab;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.text.DefaultCaret;
 
 import argonms.gui.model.Environment;
 
@@ -45,12 +52,15 @@ import argonms.gui.model.Environment;
 @SuppressWarnings("serial")
 public abstract class ConsoleTab extends JPanel {
 	private static class OutputBox extends JTextArea {
+		private final MouseAdapter mouseAdapter;
+		private JScrollBar scrollBar;
+		private volatile boolean heldByScrollWheel, hold;
+
 		/**
 		 * This method is not thread-safe. It must be called from the Swing EDT.
 		 */
 		public OutputBox() {
 			super(25, 80);
-			((DefaultCaret) getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 			setFont(Environment.CONSOLE_FONT);
 			setEditable(false);
@@ -58,6 +68,71 @@ public abstract class ConsoleTab extends JPanel {
 
 			setBackground(Color.WHITE);
 			setForeground(Color.BLACK);
+
+			mouseAdapter = new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					heldByScrollWheel = false;
+					hold = true;
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					heldByScrollWheel = false;
+					hold = false;
+				}
+
+				@Override
+				public void mouseWheelMoved(MouseWheelEvent e) {
+					heldByScrollWheel = true;
+					hold = true;
+				}
+			};
+		}
+
+		private void addFirstMouseListener(Component c) {
+			c.removeMouseListener(mouseAdapter);
+
+			MouseListener[] existingClickListeners = c.getMouseListeners();
+			for (int i = 0; i < existingClickListeners.length; i++)
+				c.removeMouseListener(existingClickListeners[i]);
+
+			c.addMouseListener(mouseAdapter);
+
+			for (int i = 0; i < existingClickListeners.length; i++)
+				c.addMouseListener(existingClickListeners[i]);
+		}
+
+		private void addLastMouseListener(Component c) {
+			c.removeMouseListener(mouseAdapter);
+			c.addMouseListener(mouseAdapter);
+		}
+
+		public void updateScrollBarMouseListeners() {
+			addLastMouseListener(scrollBar);
+			for (Component c : scrollBar.getComponents())
+				addFirstMouseListener(c);
+		}
+
+		public void setScrollBar(JScrollBar sb) {
+			scrollBar = sb;
+			updateScrollBarMouseListeners();
+			sb.addAdjustmentListener(new AdjustmentListener() {
+				@Override
+				public void adjustmentValueChanged(AdjustmentEvent e) {
+					if (!hold && !e.getValueIsAdjusting())
+						scrollBar.setValue(scrollBar.getMaximum());
+				}
+			});
+		}
+
+		@Override
+		public void append(String str) {
+			if (heldByScrollWheel) {
+				hold = false;
+				heldByScrollWheel = false;
+			}
+			super.append(str);
 		}
 	}
 
@@ -116,9 +191,12 @@ public abstract class ConsoleTab extends JPanel {
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
 		output = new OutputBox();
-		add(new JScrollPane(output,
+		JScrollPane outputPane = new JScrollPane(output,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		output.setScrollBar(outputPane.getVerticalScrollBar());
+		outputPane.addMouseWheelListener(output.mouseAdapter);
+		add(outputPane);
 
 		add(Box.createRigidArea(new Dimension(0, 5)));
 
@@ -173,4 +251,8 @@ public abstract class ConsoleTab extends JPanel {
 	}
 
 	protected abstract void textEntered(String text);
+
+	public void onLookAndFeelChanged() {
+		output.updateScrollBarMouseListeners();
+	}
 }

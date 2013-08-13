@@ -106,6 +106,13 @@
 	* Use Adapter abstract classes instead of Listener interfaces to reduce
 	boilerplate from unused methods.
 
+2013-08-13  GoldenKevin  (revision 14)
+
+	* Appending to the output box of ConsoleTab will more reliably scroll the
+	output box to the bottom. Works even when the tab is not open. Will scroll
+	to the very bottom of the box and not just the bottom of the last line,
+	which is apparent in themes like Nimbus that have padded JTextAreas.
+
 Copyright 2011-2013 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.

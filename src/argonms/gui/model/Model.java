@@ -31,6 +31,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import argonms.gui.tab.CenterServerTab;
+import argonms.gui.tab.ConsoleTab;
 import argonms.gui.tab.GameServerTab;
 import argonms.gui.tab.LoginServerTab;
 import argonms.gui.tab.MainTab;
@@ -88,6 +89,11 @@ public class Model {
 				SwingUtilities.updateComponentTreeUI(w);
 				w.pack();
 			}
+			for (ConsoleTab tab : idleServers)
+				tab.onLookAndFeelChanged();
+			for (ConsoleTab tab : runningServers)
+				tab.onLookAndFeelChanged();
+			telnetTab.onLookAndFeelChanged();
 		} catch (ClassNotFoundException e) {
 			System.err.println("Error refreshing look and feel");
 			e.printStackTrace();
