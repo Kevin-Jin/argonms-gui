@@ -127,7 +127,9 @@ public class Configuration {
 	private String loginPropPath;
 	private boolean shopEnabled;
 	private String shopPropPath;
-	private String blockedCsSnsPath;
+	private String csBlockedSnsPath;
+	private String csCommodityOverridesPath;
+	private String csLimitedCommoditiesPath;
 	private String centerPropPath;
 	private String lookAndFeel;
 
@@ -235,7 +237,11 @@ public class Configuration {
 				else if (splittedKey[3].equals("properties"))
 					shopPropPath = (String) prop.getValue();
 				else if (splittedKey[3].equals("blockedserials"))
-					blockedCsSnsPath = (String) prop.getValue();
+					csBlockedSnsPath = (String) prop.getValue();
+				else if (splittedKey[3].equals("commodityoverride"))
+					csCommodityOverridesPath = (String) prop.getValue();
+				else if (splittedKey[3].equals("limitedcommodity"))
+					csLimitedCommoditiesPath = (String) prop.getValue();
 			} else if (splittedKey[2].equals("center")) {
 				if (splittedKey[3].equals("properties"))
 					centerPropPath = (String) prop.getValue();
@@ -547,12 +553,28 @@ public class Configuration {
 					props.setProperty("argonms.gui.shop.properties", selected);
 					doStore = true;
 				}
-				if (shopEnabled && blockedCsSnsPath == null) {
-					String selected = safePromptForTextFile(parent, "Select your blockedcashshopserialnumbers.txt file");
+				if (shopEnabled && csBlockedSnsPath == null) {
+					String selected = safePromptForTextFile(parent, "Select your cashshopblockedserialnumbers.txt file");
 					if (selected == null)
 						return false;
-					blockedCsSnsPath = selected;
+					csBlockedSnsPath = selected;
 					props.setProperty("argonms.gui.shop.blockedserials", selected);
+					doStore = true;
+				}
+				if (shopEnabled && csCommodityOverridesPath == null) {
+					String selected = safePromptForTextFile(parent, "Select your cashshopcommodityoverrides.txt file");
+					if (selected == null)
+						return false;
+					csCommodityOverridesPath = selected;
+					props.setProperty("argonms.gui.shop.commodityoverride", selected);
+					doStore = true;
+				}
+				if (shopEnabled && csLimitedCommoditiesPath == null) {
+					String selected = safePromptForTextFile(parent, "Select your cashshoplimitedcommodities.txt file");
+					if (selected == null)
+						return false;
+					csLimitedCommoditiesPath = selected;
+					props.setProperty("argonms.gui.shop.limitedcommodity", selected);
 					doStore = true;
 				}
 				if (centerPropPath == null) {
@@ -668,8 +690,16 @@ public class Configuration {
 		return shopPropPath;
 	}
 
-	public String getBlockedCashSerialsPath() {
-		return blockedCsSnsPath;
+	public String getCashShopBlockedSerialsPath() {
+		return csBlockedSnsPath;
+	}
+
+	public String getCashShopCommodityOverridesPath() {
+		return csCommodityOverridesPath;
+	}
+
+	public String getCashShopLimitedCommoditiesPath() {
+		return csLimitedCommoditiesPath;
 	}
 
 	public String getCenterServerPropertiesPath() {

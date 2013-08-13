@@ -93,6 +93,13 @@
 
 	* Added support for blockedcashshopserialnumbers.txt feature in ArgonMS.
 
+2013-08-13  GoldenKevin  (revision 12)
+
+	* Added support for cashshopcommodityoverrides.txt and
+	cashshoplimitedcommodities.txt features in ArgonMS. Renamed
+	blockedcashshopserialnumbers.txt to cashshopblockedserialnumbers.txt.
+	* Rearrange layout of Launch Configuration window.
+
 Copyright 2011-2013 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.

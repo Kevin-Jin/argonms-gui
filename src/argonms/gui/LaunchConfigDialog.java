@@ -120,26 +120,18 @@ public class LaunchConfigDialog extends JDialog {
 		add(constructCenterServerPanel(), c);
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridwidth = 1;
-		c.gridheight = 1;
+		c.gridheight = 4;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weightx = 0;
-		add(constructLoginServerPanel(), c);
+		add(constructGameServersPanel(), c);
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
-		c.gridy = 2;
-		c.weightx = 0;
-		add(constructShopServerPanel(), c);
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 3;
+		c.gridy = 5;
 		c.weightx = 0;
 		add(constructClasspathPanel(), c);
 		c.anchor = GridBagConstraints.LINE_START;
@@ -147,7 +139,7 @@ public class LaunchConfigDialog extends JDialog {
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
-		c.gridy = 4;
+		c.gridy = 6;
 		c.weightx = 0;
 		add(constructWzPathPanel(), c);
 		c.anchor = GridBagConstraints.LAST_LINE_START;
@@ -155,50 +147,58 @@ public class LaunchConfigDialog extends JDialog {
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
-		c.gridy = 5;
+		c.gridy = 7;
 		c.weightx = 0;
-		add(constructDatabasePropertiesPanel(), c);
-		c.anchor = GridBagConstraints.LAST_LINE_START;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 6;
-		c.weightx = 0;
-		add(constructMacBanBlacklistPathPanel(), c);
+		add(constructScriptPathPanel(), c);
 
 		//right column
 		c.anchor = GridBagConstraints.FIRST_LINE_END;
 		c.gridwidth = 1;
-		c.gridheight = 4;
+		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 1;
 		c.gridy = 0;
+		c.weightx = 0;
+		add(constructLoginServerPanel(), c);
+		c.anchor = GridBagConstraints.LINE_END;
+		c.gridwidth = 1;
+		c.gridheight = 4;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 1;
+		c.gridy = 1;
 		c.weightx = 1;
-		add(constructGameServersPanel(), c);
+		add(constructShopServerPanel(), c);
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 1;
-		c.gridy = 4;
+		c.gridy = 5;
 		c.weightx = 1;
-		add(constructScriptPathPanel(), c);
+		add(constructDatabasePropertiesPanel(), c);
+		c.anchor = GridBagConstraints.LINE_END;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 1;
+		c.gridy = 6;
+		c.weightx = 1;
+		add(constructLoggerPropertiesPanel(), c);
 		c.anchor = GridBagConstraints.LAST_LINE_END;
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 1;
-		c.gridy = 5;
+		c.gridy = 7;
 		c.weightx = 1;
-		add(constructLoggerPropertiesPanel(), c);
+		add(constructMacBanBlacklistPathPanel(), c);
 
 		c.anchor = GridBagConstraints.LAST_LINE_END;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridheight = GridBagConstraints.REMAINDER;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
-		c.gridy = 6;
+		c.gridy = 8;
 		c.weightx = 1;
 		add(constructDialogButtonsPanel(), c);
 	}
@@ -300,14 +300,18 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructShopServerPanel() {
 		JPanel shopServerPanel = new JPanel();
-		shopServerPanel.setLayout(new GridLayout(3, 1, 5, 5));
+		shopServerPanel.setLayout(new GridLayout(5, 1, 5, 5));
 		shopServerPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createLineBorder(Color.BLACK), "Shop"));
 		final JCheckBox chkRun = new JCheckBox("Run shop server", null, m.getConfig().isShopEnabled());
 		final JLabel shopPropsLbl = new JLabel("Shop Properties:");
 		final JTextField shopPropsUrl = new JTextField(m.getConfig().getShopServerPropertiesPath(), 10);
 		final JLabel blockedSerialsLbl = new JLabel("Blocked SNs:");
-		final JTextField blockedSerialsUrl = new JTextField(m.getConfig().getBlockedCashSerialsPath(), 10);
+		final JTextField blockedSerialsUrl = new JTextField(m.getConfig().getCashShopBlockedSerialsPath(), 10);
+		final JLabel commodityOverridesLbl = new JLabel("Commodity overrides:");
+		final JTextField commodityOverridesUrl = new JTextField(m.getConfig().getCashShopCommodityOverridesPath(), 10);
+		final JLabel limitedCommoditiesLbl = new JLabel("Limited commodities:");
+		final JTextField limitedCommoditiesUrl = new JTextField(m.getConfig().getCashShopLimitedCommoditiesPath(), 10);
 		chkRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (chkRun.isSelected()) {
@@ -318,21 +322,52 @@ public class LaunchConfigDialog extends JDialog {
 						if (selected != null) {
 							shopPropsUrl.setEnabled(true);
 							shopPropsLbl.setEnabled(true);
-							changes.put("argonms.gui.shop.run", "true");
 							shopPropsUrl.setText(selected);
 							changes.put("argonms.gui.shop.properties", selected);
 							applyButton.setEnabled(true);
 
-							selected = m.getConfig().getBlockedCashSerialsPath();
+							selected = m.getConfig().getCashShopBlockedSerialsPath();
 							if (selected == null)
-								selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your blockedcashshopserialnumbers.txt file");
+								selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopblockedserialnumbers.txt file");
 							if (selected != null) {
 								blockedSerialsUrl.setEnabled(true);
 								blockedSerialsLbl.setEnabled(true);
-								changes.put("argonms.gui.shop.run", "true");
 								blockedSerialsUrl.setText(selected);
 								changes.put("argonms.gui.shop.blockedserials", selected);
 								applyButton.setEnabled(true);
+
+								selected = m.getConfig().getCashShopCommodityOverridesPath();
+								if (selected == null)
+									selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopcommodityoverrides.txt file");
+								if (selected != null) {
+									commodityOverridesUrl.setEnabled(true);
+									commodityOverridesLbl.setEnabled(true);
+									commodityOverridesUrl.setText(selected);
+									changes.put("argonms.gui.shop.commodityoverride", selected);
+									applyButton.setEnabled(true);
+
+									selected = m.getConfig().getCashShopLimitedCommoditiesPath();
+									if (selected == null)
+										selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshoplimitedcommodities.txt file");
+									if (selected != null) {
+										limitedCommoditiesUrl.setEnabled(true);
+										limitedCommoditiesLbl.setEnabled(true);
+										changes.put("argonms.gui.shop.run", "true");
+										limitedCommoditiesUrl.setText(selected);
+										changes.put("argonms.gui.shop.limitedcommodity", selected);
+										applyButton.setEnabled(true);
+									} else {
+										limitedCommoditiesUrl.setEnabled(false);
+										limitedCommoditiesLbl.setEnabled(false);
+										limitedCommoditiesUrl.setText(null);
+										chkRun.setSelected(false);
+									}
+								} else {
+									commodityOverridesUrl.setEnabled(false);
+									commodityOverridesLbl.setEnabled(false);
+									commodityOverridesUrl.setText(null);
+									chkRun.setSelected(false);
+								}
 							} else {
 								blockedSerialsUrl.setEnabled(false);
 								blockedSerialsLbl.setEnabled(false);
@@ -361,6 +396,10 @@ public class LaunchConfigDialog extends JDialog {
 					shopPropsLbl.setEnabled(false);
 					blockedSerialsUrl.setEnabled(false);
 					blockedSerialsLbl.setEnabled(false);
+					commodityOverridesUrl.setEnabled(false);
+					commodityOverridesLbl.setEnabled(false);
+					limitedCommoditiesUrl.setEnabled(false);
+					limitedCommoditiesLbl.setEnabled(false);
 					changes.put("argonms.gui.shop.run", "false");
 					applyButton.setEnabled(true);
 				}
@@ -371,11 +410,19 @@ public class LaunchConfigDialog extends JDialog {
 			shopPropsLbl.setEnabled(true);
 			blockedSerialsUrl.setEnabled(true);
 			blockedSerialsLbl.setEnabled(true);
+			commodityOverridesUrl.setEnabled(true);
+			commodityOverridesLbl.setEnabled(true);
+			limitedCommoditiesUrl.setEnabled(true);
+			limitedCommoditiesLbl.setEnabled(true);
 		} else {
 			shopPropsUrl.setEnabled(false);
 			shopPropsLbl.setEnabled(false);
 			blockedSerialsUrl.setEnabled(false);
 			blockedSerialsLbl.setEnabled(false);
+			commodityOverridesUrl.setEnabled(false);
+			commodityOverridesLbl.setEnabled(false);
+			limitedCommoditiesUrl.setEnabled(false);
+			limitedCommoditiesLbl.setEnabled(false);
 		}
 		shopPropsUrl.setEditable(false);
 		shopPropsUrl.addMouseListener(new MouseListener() {
@@ -415,14 +462,80 @@ public class LaunchConfigDialog extends JDialog {
 			public void mouseClicked(MouseEvent e) {
 				if (blockedSerialsUrl.isEnabled()) {
 					try {
-						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your blockedcashshopserialnumbers.txt file");
+						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopblockedserialnumbers.txt file");
 						if (selected != null) {
 							blockedSerialsUrl.setText(selected);
 							changes.put("argonms.gui.shop.blockedserials", selected);
 							applyButton.setEnabled(true);
 						}
 					} catch (IOException ex) {
-						System.err.println("Error in selecting blockedcashshopserialnumbers.txt");
+						System.err.println("Error in selecting cashshopblockedserialnumbers.txt");
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(
+							LaunchConfigDialog.this,
+							"Error while changing settings: " + ex,
+							"Settings Changing Error",
+							JOptionPane.ERROR_MESSAGE
+						);
+					}
+				}
+			}
+
+			public void mousePressed(MouseEvent e) { }
+
+			public void mouseReleased(MouseEvent e) { }
+
+			public void mouseEntered(MouseEvent e) { }
+
+			public void mouseExited(MouseEvent e) { }
+		});
+
+		commodityOverridesUrl.setEditable(false);
+		commodityOverridesUrl.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if (commodityOverridesUrl.isEnabled()) {
+					try {
+						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopcommodityoverrides.txt file");
+						if (selected != null) {
+							commodityOverridesUrl.setText(selected);
+							changes.put("argonms.gui.shop.commodityoverride", selected);
+							applyButton.setEnabled(true);
+						}
+					} catch (IOException ex) {
+						System.err.println("Error in selecting cashshopcommodityoverrides.txt");
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(
+							LaunchConfigDialog.this,
+							"Error while changing settings: " + ex,
+							"Settings Changing Error",
+							JOptionPane.ERROR_MESSAGE
+						);
+					}
+				}
+			}
+
+			public void mousePressed(MouseEvent e) { }
+
+			public void mouseReleased(MouseEvent e) { }
+
+			public void mouseEntered(MouseEvent e) { }
+
+			public void mouseExited(MouseEvent e) { }
+		});
+
+		limitedCommoditiesUrl.setEditable(false);
+		limitedCommoditiesUrl.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if (commodityOverridesUrl.isEnabled()) {
+					try {
+						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshoplimitedcommodities.txt file");
+						if (selected != null) {
+							limitedCommoditiesUrl.setText(selected);
+							changes.put("argonms.gui.shop.limitedcommodity", selected);
+							applyButton.setEnabled(true);
+						}
+					} catch (IOException ex) {
+						System.err.println("Error in selecting cashshoplimitedcommodities.txt");
 						ex.printStackTrace();
 						JOptionPane.showMessageDialog(
 							LaunchConfigDialog.this,
@@ -454,6 +567,16 @@ public class LaunchConfigDialog extends JDialog {
 		urlPanel.setLayout(new GridLayout(1, 2));
 		urlPanel.add(blockedSerialsLbl);
 		urlPanel.add(blockedSerialsUrl);
+		shopServerPanel.add(urlPanel);
+		urlPanel = new JPanel();
+		urlPanel.setLayout(new GridLayout(1, 2));
+		urlPanel.add(commodityOverridesLbl);
+		urlPanel.add(commodityOverridesUrl);
+		shopServerPanel.add(urlPanel);
+		urlPanel = new JPanel();
+		urlPanel.setLayout(new GridLayout(1, 2));
+		urlPanel.add(limitedCommoditiesLbl);
+		urlPanel.add(limitedCommoditiesUrl);
 		shopServerPanel.add(urlPanel);
 		return shopServerPanel;
 	}
