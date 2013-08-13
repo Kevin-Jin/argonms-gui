@@ -30,8 +30,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
@@ -203,10 +203,7 @@ public class Main {
 		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		window.setResizable(false);
 
-		window.addWindowListener(new WindowListener() {
-			@Override
-			public void windowActivated(WindowEvent arg0) { }
-
+		window.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent arg0) {
 				close(m);
@@ -225,19 +222,10 @@ public class Main {
 			}
 
 			@Override
-			public void windowDeactivated(WindowEvent arg0) { }
-
-			@Override
-			public void windowDeiconified(WindowEvent arg0) { }
-
-			@Override
 			public void windowIconified(WindowEvent arg0) {
 				if (useTray)
 					window.setVisible(false);
 			}
-
-			@Override
-			public void windowOpened(WindowEvent arg0) { }
 		});
 
 		window.getContentPane().add(m.getView());

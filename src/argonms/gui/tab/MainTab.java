@@ -75,6 +75,7 @@ public class MainTab extends JPanel {
 
 		JButton pathSettings = new JButton("Launch Configuration");
 		pathSettings.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JDialog d = new LaunchConfigDialog(m);
 				d.setResizable(false);
@@ -84,6 +85,7 @@ public class MainTab extends JPanel {
 		});
 		JButton windowSettings = new JButton("Window Preferences");
 		windowSettings.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JDialog d = new WindowSettingsDialog(m);
 				d.setResizable(false);

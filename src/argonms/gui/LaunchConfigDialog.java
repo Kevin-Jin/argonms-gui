@@ -27,10 +27,11 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,14 +69,9 @@ public class LaunchConfigDialog extends JDialog {
 		changes = new HashMap<String, String>();
 
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowListener() {
-			public void windowActivated(WindowEvent arg0) { }
-
-			public void windowClosed(WindowEvent arg0) {
-
-			}
-
-			public void windowClosing(WindowEvent arg0) {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
 				if (!changes.isEmpty()) {
 					int option = JOptionPane.showConfirmDialog(LaunchConfigDialog.this,
 							"You have modified some settings without saving.\n"
@@ -96,14 +92,6 @@ public class LaunchConfigDialog extends JDialog {
 					dispose();
 				}
 			}
-
-			public void windowDeactivated(WindowEvent arg0) { }
-
-			public void windowDeiconified(WindowEvent arg0) { }
-
-			public void windowIconified(WindowEvent arg0) { }
-
-			public void windowOpened(WindowEvent arg0) { }
 		});
 
 		setLayout(new GridBagLayout());
@@ -228,7 +216,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructCenterServerPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Center", "Center Properties:", textbox, m.getConfig().getCenterServerPropertiesPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Center", "Center Properties:", textbox, m.getConfig().getCenterServerPropertiesPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your center.properties file");
@@ -248,14 +237,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -264,7 +245,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructLoginServerPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Login", "Login Properties:", textbox, m.getConfig().getLoginServerPropertiesPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Login", "Login Properties:", textbox, m.getConfig().getLoginServerPropertiesPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your login.properties file");
@@ -284,14 +266,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -313,6 +287,7 @@ public class LaunchConfigDialog extends JDialog {
 		final JLabel limitedCommoditiesLbl = new JLabel("Limited commodities:");
 		final JTextField limitedCommoditiesUrl = new JTextField(m.getConfig().getCashShopLimitedCommoditiesPath(), 10);
 		chkRun.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (chkRun.isSelected()) {
 					try {
@@ -425,7 +400,8 @@ public class LaunchConfigDialog extends JDialog {
 			limitedCommoditiesLbl.setEnabled(false);
 		}
 		shopPropsUrl.setEditable(false);
-		shopPropsUrl.addMouseListener(new MouseListener() {
+		shopPropsUrl.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (shopPropsUrl.isEnabled()) {
 					try {
@@ -447,18 +423,11 @@ public class LaunchConfigDialog extends JDialog {
 					}
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 
 		blockedSerialsUrl.setEditable(false);
-		blockedSerialsUrl.addMouseListener(new MouseListener() {
+		blockedSerialsUrl.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (blockedSerialsUrl.isEnabled()) {
 					try {
@@ -480,18 +449,11 @@ public class LaunchConfigDialog extends JDialog {
 					}
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 
 		commodityOverridesUrl.setEditable(false);
-		commodityOverridesUrl.addMouseListener(new MouseListener() {
+		commodityOverridesUrl.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (commodityOverridesUrl.isEnabled()) {
 					try {
@@ -513,18 +475,11 @@ public class LaunchConfigDialog extends JDialog {
 					}
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 
 		limitedCommoditiesUrl.setEditable(false);
-		limitedCommoditiesUrl.addMouseListener(new MouseListener() {
+		limitedCommoditiesUrl.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (commodityOverridesUrl.isEnabled()) {
 					try {
@@ -546,14 +501,6 @@ public class LaunchConfigDialog extends JDialog {
 					}
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 
 		//layout and place on panel
@@ -663,6 +610,7 @@ public class LaunchConfigDialog extends JDialog {
 
 		//add functionality
 		editServerButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selectedIndex = activeGameServers.getSelectedIndex();
 				if (selectedIndex == -1)
@@ -675,6 +623,7 @@ public class LaunchConfigDialog extends JDialog {
 			}
 		});
 		removeServerButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selectedIndex = activeGameServers.getSelectedIndex();
 				if (selectedIndex == -1)
@@ -701,6 +650,7 @@ public class LaunchConfigDialog extends JDialog {
 			}
 		});
 		addServerButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String text = gameServerIdEntry.getText();
 				if (isAllowedGameId(text)) {
@@ -802,21 +752,14 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructClasspathPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Classpath", "Classpath:", textbox, m.getConfig().getClasspath(), new MouseListener() {
+		return constructSimplePathSubPanel("Classpath", "Classpath:", textbox, m.getConfig().getClasspath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				JDialog d = new ClasspathDialog();
 				d.setResizable(false);
 				d.pack();
 				d.setVisible(true);
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -825,7 +768,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructWzPathPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Wz Path", "Wz Folder:", textbox, m.getConfig().getWzPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Wz Path", "Wz Folder:", textbox, m.getConfig().getWzPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForDirectory(LaunchConfigDialog.this, "Select your WZ data folder");
@@ -845,14 +789,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -861,7 +797,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructScriptPathPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Script Path", "Scripts Folder:", textbox, m.getConfig().getScriptsPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Script Path", "Scripts Folder:", textbox, m.getConfig().getScriptsPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForDirectory(LaunchConfigDialog.this, "Select your scripts folder");
@@ -881,14 +818,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -897,7 +826,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructDatabasePropertiesPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Database", "Database Properties:", textbox, m.getConfig().getDatabasePropertiesPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Database", "Database Properties:", textbox, m.getConfig().getDatabasePropertiesPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your db.properties file");
@@ -917,14 +847,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -933,7 +855,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructLoggerPropertiesPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Logger", "Logging Properties:", textbox, m.getConfig().getLoggerPropertiesPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Logger", "Logging Properties:", textbox, m.getConfig().getLoggerPropertiesPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your logging.properties file");
@@ -953,14 +876,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -969,7 +884,8 @@ public class LaunchConfigDialog extends JDialog {
 	 */
 	private JPanel constructMacBanBlacklistPathPanel() {
 		final JTextField textbox = new JTextField();
-		return constructSimplePathSubPanel("Cheat Tracker", "MAC Ban Blacklist:", textbox, m.getConfig().getMacBanBlacklistPath(), new MouseListener() {
+		return constructSimplePathSubPanel("Cheat Tracker", "MAC Ban Blacklist:", textbox, m.getConfig().getMacBanBlacklistPath(), new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your macbanblacklist.txt file");
@@ -989,14 +905,6 @@ public class LaunchConfigDialog extends JDialog {
 					);
 				}
 			}
-
-			public void mousePressed(MouseEvent e) { }
-
-			public void mouseReleased(MouseEvent e) { }
-
-			public void mouseEntered(MouseEvent e) { }
-
-			public void mouseExited(MouseEvent e) { }
 		});
 	}
 
@@ -1010,17 +918,20 @@ public class LaunchConfigDialog extends JDialog {
 		applyButton = new JButton("Apply");
 
 		okButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				applyChanges();
 				dispose();
 			}
 		});
 		cancelButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
 		applyButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				applyChanges();
 			}
@@ -1081,14 +992,9 @@ public class LaunchConfigDialog extends JDialog {
 			super(LaunchConfigDialog.this, "Game" + id + " Settings", true);
 
 			setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-			addWindowListener(new WindowListener() {
-				public void windowActivated(WindowEvent arg0) { }
-
-				public void windowClosed(WindowEvent arg0) {
-
-				}
-
-				public void windowClosing(WindowEvent arg0) {
+			addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
 					if (selected != null) {
 						int option = JOptionPane.showConfirmDialog(GameServerSettings.this,
 								"You have modified the path to your game" + id + " properties file.\n"
@@ -1110,14 +1016,6 @@ public class LaunchConfigDialog extends JDialog {
 						dispose();
 					}
 				}
-
-				public void windowDeactivated(WindowEvent arg0) { }
-
-				public void windowDeiconified(WindowEvent arg0) { }
-
-				public void windowIconified(WindowEvent arg0) { }
-
-				public void windowOpened(WindowEvent arg0) { }
 			});
 			setLayout(new FlowLayout());
 
@@ -1129,7 +1027,8 @@ public class LaunchConfigDialog extends JDialog {
 			JButton okButton = new JButton("OK");
 			JButton cancelButton = new JButton("Cancel");
 			gamePropsUrl.setEditable(false);
-			gamePropsUrl.addMouseListener(new MouseListener() {
+			gamePropsUrl.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
 						selected = m.getConfig().promptForPropsFile(GameServerSettings.this, "Select your game" + id + ".properties file");
@@ -1146,16 +1045,9 @@ public class LaunchConfigDialog extends JDialog {
 						);
 					}
 				}
-
-				public void mousePressed(MouseEvent e) { }
-
-				public void mouseReleased(MouseEvent e) { }
-
-				public void mouseEntered(MouseEvent e) { }
-
-				public void mouseExited(MouseEvent e) { }
 			});
 			okButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (selected != null) {
 						changes.put("argonms.gui.game." + id + ".properties", selected);
@@ -1165,6 +1057,7 @@ public class LaunchConfigDialog extends JDialog {
 				}
 			});
 			cancelButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
 				}
@@ -1204,6 +1097,7 @@ public class LaunchConfigDialog extends JDialog {
 			JButton addButton = new JButton("Add");
 
 			removeButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedIndex = paths.getSelectedIndex();
 					if (selectedIndex == -1)
@@ -1230,6 +1124,7 @@ public class LaunchConfigDialog extends JDialog {
 				}
 			});
 			addButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
 						String[] selected = m.getConfig().promptForClasspath(ClasspathDialog.this, "Append to classpath");

@@ -21,8 +21,8 @@ package argonms.gui.tab;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -72,13 +72,7 @@ public abstract class ConsoleTab extends JPanel {
 
 			textbox = new JTextField(80);
 			textbox.setFont(Environment.CONSOLE_FONT);
-			textbox.addKeyListener(new KeyListener() {
-				@Override
-				public void keyPressed(KeyEvent e) { }
-
-				@Override
-				public void keyReleased(KeyEvent e) { }
-
+			textbox.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					if (e.getKeyChar() == KeyEvent.VK_ENTER) {

@@ -20,8 +20,8 @@ package argonms.gui.tab;
 
 import java.awt.CardLayout;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,24 +73,12 @@ public class TelnetTab extends ConsoleTab {
 		pane.setOpaque(false);
 
 		status = new JLabel();
-		status.addMouseListener(new MouseListener() {
+		status.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (!connected)
 					layout.show(optionsPane, CONNECT_PANEL_KEY);
 			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) { }
-
-			@Override
-			public void mouseExited(MouseEvent e) { }
-
-			@Override
-			public void mousePressed(MouseEvent e) { }
-
-			@Override
-			public void mouseReleased(MouseEvent e) { }
 		});
 		return pane;
 	}

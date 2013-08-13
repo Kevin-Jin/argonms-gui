@@ -73,6 +73,7 @@ public class Configuration {
 			JButton add = new JButton("Add ->");
 			final DefaultListModel listModel = new DefaultListModel();
 			add.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					List<File> list = Arrays.asList(choose.getSelectedFiles());
 					selected.addAll(list);
@@ -90,6 +91,7 @@ public class Configuration {
 			add(listPane);
 			JButton remove = new JButton("<- Remove");
 			remove.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					for (Object v : list.getSelectedValues())
 						listModel.removeElement(v);
