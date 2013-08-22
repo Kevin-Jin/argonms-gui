@@ -113,6 +113,11 @@
 	to the very bottom of the box and not just the bottom of the last line,
 	which is apparent in themes like Nimbus that have padded JTextAreas.
 
+2013-08-22  GoldenKevin  (revision 15)
+
+	* Fix output box scrolling to the bottom when trying to select text that is
+	out of view.
+
 Copyright 2011-2013 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.

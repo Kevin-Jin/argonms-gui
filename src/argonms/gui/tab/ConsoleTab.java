@@ -109,6 +109,7 @@ public abstract class ConsoleTab extends JPanel {
 		}
 
 		public void updateScrollBarMouseListeners() {
+			addLastMouseListener(this);
 			addLastMouseListener(scrollBar);
 			for (Component c : scrollBar.getComponents())
 				addFirstMouseListener(c);
