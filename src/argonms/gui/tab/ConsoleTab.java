@@ -44,6 +44,10 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import argonms.gui.model.Environment;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 
@@ -52,40 +56,81 @@ import argonms.gui.model.Environment;
 @SuppressWarnings("serial")
 public abstract class ConsoleTab extends JPanel {
 	private static class OutputBox extends JTextArea {
+		private final KeyAdapter keyAdapter;
 		private final MouseAdapter mouseAdapter;
 		private JScrollBar scrollBar;
-		private volatile boolean heldByScrollWheel, hold;
+		private volatile boolean heldByScrollWheel;
+		private boolean heldByClick; //should only be used in EDT, so we're safe
+		private final Set<Integer> heldKeys;
 
 		/**
 		 * This method is not thread-safe. It must be called from the Swing EDT.
 		 */
 		public OutputBox() {
 			super(25, 80);
+			heldKeys = new HashSet<Integer>(); //should only be used in EDT, so we're safe
 
 			setFont(Environment.CONSOLE_FONT);
 			setEditable(false);
+			getCaret().setVisible(true);
 			setLineWrap(true);
+			addFocusListener(new FocusListener() {
+				@Override
+				public void focusGained(FocusEvent e) {
+					getCaret().setVisible(true);
+				}
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					getCaret().setVisible(true);
+					heldKeys.clear();
+				}
+			});
 
 			setBackground(Color.WHITE);
 			setForeground(Color.BLACK);
+			setCaretColor(Color.BLACK);
 
 			mouseAdapter = new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent e) {
-					heldByScrollWheel = false;
-					hold = true;
+					heldByClick = true;
 				}
 
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					heldByScrollWheel = false;
-					hold = false;
+					heldByClick = false;
 				}
 
 				@Override
 				public void mouseWheelMoved(MouseWheelEvent e) {
 					heldByScrollWheel = true;
-					hold = true;
+				}
+			};
+
+			keyAdapter = new KeyAdapter() {
+				private boolean isHandledKey(KeyEvent e) {
+					switch (e.getKeyCode()) {
+						case KeyEvent.VK_LEFT:
+						case KeyEvent.VK_RIGHT:
+						case KeyEvent.VK_UP:
+						case KeyEvent.VK_DOWN:
+							return true;
+						default:
+							return false;
+					}
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (isHandledKey(e))
+						heldKeys.add(Integer.valueOf(e.getKeyCode()));
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if (isHandledKey(e))
+						heldKeys.remove(Integer.valueOf(e.getKeyCode()));
 				}
 			};
 		}
@@ -108,20 +153,30 @@ public abstract class ConsoleTab extends JPanel {
 			c.addMouseListener(mouseAdapter);
 		}
 
-		public void updateScrollBarMouseListeners() {
+		private void addLastKeyListener(Component c) {
+			c.removeKeyListener(keyAdapter);
+			c.addKeyListener(keyAdapter);
+		}
+
+		public void updateScrollBarInputListeners() {
+			addLastKeyListener(this);
 			addLastMouseListener(this);
 			addLastMouseListener(scrollBar);
 			for (Component c : scrollBar.getComponents())
 				addFirstMouseListener(c);
 		}
 
+		private boolean scrollHold() {
+			return heldByClick || heldByScrollWheel || !heldKeys.isEmpty();
+		}
+
 		public void setScrollBar(JScrollBar sb) {
 			scrollBar = sb;
-			updateScrollBarMouseListeners();
+			updateScrollBarInputListeners();
 			sb.addAdjustmentListener(new AdjustmentListener() {
 				@Override
 				public void adjustmentValueChanged(AdjustmentEvent e) {
-					if (!hold && !e.getValueIsAdjusting())
+					if (!scrollHold() && !e.getValueIsAdjusting())
 						scrollBar.setValue(scrollBar.getMaximum());
 				}
 			});
@@ -129,10 +184,7 @@ public abstract class ConsoleTab extends JPanel {
 
 		@Override
 		public void append(String str) {
-			if (heldByScrollWheel) {
-				hold = false;
-				heldByScrollWheel = false;
-			}
+			heldByScrollWheel = false;
 			super.append(str);
 		}
 	}
@@ -215,6 +267,7 @@ public abstract class ConsoleTab extends JPanel {
 			public void run() {
 				output.setBackground(Color.BLACK);
 				output.setForeground(Color.WHITE);
+				output.setCaretColor(Color.WHITE);
 			}
 		});
 	}
@@ -225,6 +278,7 @@ public abstract class ConsoleTab extends JPanel {
 			public void run() {
 				output.setBackground(Color.WHITE);
 				output.setForeground(Color.BLACK);
+				output.setCaretColor(Color.BLACK);
 			}
 		});
 	}
@@ -254,6 +308,6 @@ public abstract class ConsoleTab extends JPanel {
 	protected abstract void textEntered(String text);
 
 	public void onLookAndFeelChanged() {
-		output.updateScrollBarMouseListeners();
+		output.updateScrollBarInputListeners();
 	}
 }

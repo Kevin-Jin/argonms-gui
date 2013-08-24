@@ -118,6 +118,12 @@
 	* Fix output box scrolling to the bottom when trying to select text that is
 	out of view.
 
+2013-08-24  GoldenKevin  (revision 16)
+
+	* Show cursor in OutputBox.
+	* Allow use of arrow keys to navigate OutputBox without getting interrupted
+	by the auto scroll.
+
 Copyright 2011-2013 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.
