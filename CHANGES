@@ -124,6 +124,21 @@
 	* Allow use of arrow keys to navigate OutputBox without getting interrupted
 	by the auto scroll.
 
+2013-08-24  GoldenKevin  (revision 17)
+
+	* Update classpath textbox in LaunchConfigDialog when adding or removing
+	elements in ClasspathDialog.
+	* A newly opened ClasspathDialog will respect any changes made since the
+	last apply operation.
+	* Keep classpath elements in alphabetical order and enabled game servers in
+	numeric order.
+	* Do not ask for game properties path or any one of shop server related
+	paths if they were already asked for before (i.e. checking Run shop server,
+	choosing path for shop properties, unchecking Run shop server, and then
+	checking Run shop server again will not ask for shop properties again).
+	* More intelligent Apply button will disable itself if all edits made match
+	the configuration since the last apply operation.
+
 Copyright 2011-2013 GoldenKevin
 Copying and distribution of this file, with or without modification, are
 permitted provided the copyright notice and this notice are preserved.

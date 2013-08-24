@@ -18,6 +18,7 @@
 
 package argonms.gui;
 
+import argonms.gui.model.Configuration;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -49,6 +50,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import argonms.gui.model.Model;
+import java.util.Arrays;
+import java.util.TreeSet;
 
 /**
  * 
@@ -223,8 +226,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your center.properties file");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.center.properties", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getCenterServerPropertiesPath()))
+							changes.put("argonms.gui.center.properties", selected);
+						else
+							changes.remove("argonms.gui.center.properties");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting center.properties");
@@ -252,8 +258,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your login.properties file");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.login.properties", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getLoginServerPropertiesPath()))
+							changes.put("argonms.gui.login.properties", selected);
+						else
+							changes.remove("argonms.gui.login.properties");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting login.properties");
@@ -291,46 +300,71 @@ public class LaunchConfigDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				if (chkRun.isSelected()) {
 					try {
-						String selected = m.getConfig().getShopServerPropertiesPath();
+						String selected = changes.get("argonms.gui.shop.properties");
+						if (selected == null)
+							selected = m.getConfig().getShopServerPropertiesPath();
 						if (selected == null)
 							selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your shop.properties file");
 						if (selected != null) {
 							shopPropsUrl.setEnabled(true);
 							shopPropsLbl.setEnabled(true);
 							shopPropsUrl.setText(selected);
-							changes.put("argonms.gui.shop.properties", selected);
-							applyButton.setEnabled(true);
+							if (!selected.equals(m.getConfig().getShopServerPropertiesPath()))
+								changes.put("argonms.gui.shop.properties", selected);
+							else
+								changes.remove("argonms.gui.shop.properties");
+							applyButton.setEnabled(!changes.isEmpty());
 
-							selected = m.getConfig().getCashShopBlockedSerialsPath();
+							selected = changes.get("argonms.gui.shop.blockedserials");
+							if (selected == null)
+								selected = m.getConfig().getCashShopBlockedSerialsPath();
 							if (selected == null)
 								selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopblockedserialnumbers.txt file");
 							if (selected != null) {
 								blockedSerialsUrl.setEnabled(true);
 								blockedSerialsLbl.setEnabled(true);
 								blockedSerialsUrl.setText(selected);
-								changes.put("argonms.gui.shop.blockedserials", selected);
-								applyButton.setEnabled(true);
+								if (!selected.equals(m.getConfig().getCashShopBlockedSerialsPath()))
+									changes.put("argonms.gui.shop.blockedserials", selected);
+								else
+									changes.remove("argonms.gui.shop.blockedserials");
+								applyButton.setEnabled(!changes.isEmpty());
 
-								selected = m.getConfig().getCashShopCommodityOverridesPath();
+								selected = changes.get("argonms.gui.shop.commodityoverride");
+								if (selected == null)
+									selected = m.getConfig().getCashShopCommodityOverridesPath();
 								if (selected == null)
 									selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopcommodityoverrides.txt file");
 								if (selected != null) {
 									commodityOverridesUrl.setEnabled(true);
 									commodityOverridesLbl.setEnabled(true);
 									commodityOverridesUrl.setText(selected);
-									changes.put("argonms.gui.shop.commodityoverride", selected);
-									applyButton.setEnabled(true);
+									if (!selected.equals(m.getConfig().getCashShopCommodityOverridesPath()))
+										changes.put("argonms.gui.shop.commodityoverride", selected);
+									else
+										changes.remove("argonms.gui.shop.commodityoverride");
+									applyButton.setEnabled(!changes.isEmpty());
 
-									selected = m.getConfig().getCashShopLimitedCommoditiesPath();
+									selected = changes.get("argonms.gui.shop.limitedcommodity");
+									if (selected == null)
+										selected = m.getConfig().getCashShopLimitedCommoditiesPath();
 									if (selected == null)
 										selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshoplimitedcommodities.txt file");
 									if (selected != null) {
 										limitedCommoditiesUrl.setEnabled(true);
 										limitedCommoditiesLbl.setEnabled(true);
-										changes.put("argonms.gui.shop.run", "true");
 										limitedCommoditiesUrl.setText(selected);
-										changes.put("argonms.gui.shop.limitedcommodity", selected);
-										applyButton.setEnabled(true);
+										if (!selected.equals(m.getConfig().getCashShopLimitedCommoditiesPath()))
+											changes.put("argonms.gui.shop.limitedcommodity", selected);
+										else
+											changes.remove("argonms.gui.shop.limitedcommodity");
+										applyButton.setEnabled(!changes.isEmpty());
+
+										if (!m.getConfig().isShopEnabled())
+											changes.put("argonms.gui.shop.run", "true");
+										else
+											changes.remove("argonms.gui.shop.run");
+										applyButton.setEnabled(!changes.isEmpty());
 									} else {
 										limitedCommoditiesUrl.setEnabled(false);
 										limitedCommoditiesLbl.setEnabled(false);
@@ -375,8 +409,11 @@ public class LaunchConfigDialog extends JDialog {
 					commodityOverridesLbl.setEnabled(false);
 					limitedCommoditiesUrl.setEnabled(false);
 					limitedCommoditiesLbl.setEnabled(false);
-					changes.put("argonms.gui.shop.run", "false");
-					applyButton.setEnabled(true);
+					if (m.getConfig().isShopEnabled())
+						changes.put("argonms.gui.shop.run", "false");
+					else
+						changes.remove("argonms.gui.shop.run");
+					applyButton.setEnabled(!changes.isEmpty());
 				}
 			}
 		});
@@ -408,8 +445,11 @@ public class LaunchConfigDialog extends JDialog {
 						String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your shop.properties file");
 						if (selected != null) {
 							shopPropsUrl.setText(selected);
-							changes.put("argonms.gui.shop.properties", selected);
-							applyButton.setEnabled(true);
+							if (!selected.equals(m.getConfig().getShopServerPropertiesPath()))
+								changes.put("argonms.gui.shop.properties", selected);
+							else
+								changes.remove("argonms.gui.shop.properties");
+							applyButton.setEnabled(!changes.isEmpty());
 						}
 					} catch (IOException ex) {
 						System.err.println("Error in selecting shop.properties");
@@ -434,8 +474,11 @@ public class LaunchConfigDialog extends JDialog {
 						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopblockedserialnumbers.txt file");
 						if (selected != null) {
 							blockedSerialsUrl.setText(selected);
-							changes.put("argonms.gui.shop.blockedserials", selected);
-							applyButton.setEnabled(true);
+							if (!selected.equals(m.getConfig().getCashShopBlockedSerialsPath()))
+								changes.put("argonms.gui.shop.blockedserials", selected);
+							else
+								changes.remove("argonms.gui.shop.blockedserials");
+							applyButton.setEnabled(!changes.isEmpty());
 						}
 					} catch (IOException ex) {
 						System.err.println("Error in selecting cashshopblockedserialnumbers.txt");
@@ -460,8 +503,11 @@ public class LaunchConfigDialog extends JDialog {
 						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshopcommodityoverrides.txt file");
 						if (selected != null) {
 							commodityOverridesUrl.setText(selected);
-							changes.put("argonms.gui.shop.commodityoverride", selected);
-							applyButton.setEnabled(true);
+							if (!selected.equals(m.getConfig().getCashShopCommodityOverridesPath()))
+								changes.put("argonms.gui.shop.commodityoverride", selected);
+							else
+								changes.remove("argonms.gui.shop.commodityoverride");
+							applyButton.setEnabled(!changes.isEmpty());
 						}
 					} catch (IOException ex) {
 						System.err.println("Error in selecting cashshopcommodityoverrides.txt");
@@ -486,8 +532,11 @@ public class LaunchConfigDialog extends JDialog {
 						String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your cashshoplimitedcommodities.txt file");
 						if (selected != null) {
 							limitedCommoditiesUrl.setText(selected);
-							changes.put("argonms.gui.shop.limitedcommodity", selected);
-							applyButton.setEnabled(true);
+							if (!selected.equals(m.getConfig().getCashShopLimitedCommoditiesPath()))
+								changes.put("argonms.gui.shop.limitedcommodity", selected);
+							else
+								changes.remove("argonms.gui.shop.limitedcommodity");
+							applyButton.setEnabled(!changes.isEmpty());
 						}
 					} catch (IOException ex) {
 						System.err.println("Error in selecting cashshoplimitedcommodities.txt");
@@ -540,26 +589,63 @@ public class LaunchConfigDialog extends JDialog {
 		}
 	}
 
-	private static String createListWithAddition(byte[] original, byte add) {
+	private static String join(byte[] original) {
+		if (original.length == 0)
+			return "";
+
 		StringBuilder sb = new StringBuilder();
-		for (byte element : original)
+		sb.append(original[0]);
+		for (int i = 1; i < original.length; i++)
+			sb.append(',').append(original[i]);
+		return sb.toString();
+	}
+
+	private static <T> String join(T[] original) {
+		if (original.length == 0)
+			return "";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(original[0]);
+		for (int i = 1; i < original.length; i++)
+			sb.append(',').append(original[i]);
+		return sb.toString();
+	}
+
+	private static String joinWithAddition(byte[] original, byte add) {
+		boolean inserted = false;
+		StringBuilder sb = new StringBuilder();
+		for (byte element : original) {
+			if (!inserted && add < element) {
+				sb.append(add).append(',');
+				inserted = true;
+			}
 			sb.append(element).append(',');
+		}
+		if (inserted)
+			return sb.substring(0, sb.length() - 1);
+
 		sb.append(add);
 		return sb.toString();
 	}
 
-	private static <T> String createListWithAddition(T[] original, T add) {
+	private static <T extends Comparable<T>> String joinWithAddition(T[] original, T add) {
+		boolean inserted = (add == null);
 		StringBuilder sb = new StringBuilder();
-		for (T element : original)
+		for (T element : original) {
+			if (!inserted && add.compareTo(element) < 0) {
+				sb.append(add).append(',');
+				inserted = true;
+			}
 			sb.append(element).append(',');
-		if (add != null) {
-			sb.append(add);
-			return sb.toString();
 		}
-		return sb.length() != 0 ? sb.substring(0, sb.length() - 1) : sb.toString();
+		if (inserted)
+			return sb.length() != 0 ? sb.substring(0, sb.length() - 1) : sb.toString();
+
+		sb.append(add);
+		return sb.toString();
 	}
 
-	private static String createListWithExclusion(byte[] original, byte exclude) {
+	private static String joinWithExclusion(byte[] original, byte exclude) {
 		StringBuilder sb = new StringBuilder();
 		for (byte element : original)
 			if (element != exclude)
@@ -567,7 +653,7 @@ public class LaunchConfigDialog extends JDialog {
 		return sb.length() != 0 ? sb.substring(0, sb.length() - 1) : sb.toString();
 	}
 
-	private static <T> String createListWithExclusion(T[] original, T exclude) {
+	private static <T> String joinWithExclusion(T[] original, T exclude) {
 		StringBuilder sb = new StringBuilder();
 		for (T element : original)
 			if (!element.equals(exclude))
@@ -632,7 +718,7 @@ public class LaunchConfigDialog extends JDialog {
 				String prevChange = changes.get("argonms.gui.game.run");
 				String newList = null;
 				if (prevChange == null) {
-					newList = createListWithExclusion(m.getConfig().getEnabledGameServers(), Byte.parseByte(selected));
+					newList = joinWithExclusion(m.getConfig().getEnabledGameServers(), Byte.parseByte(selected));
 				} else {
 					int start = prevChange.indexOf(selected);
 					int end = start + selected.length();
@@ -644,8 +730,11 @@ public class LaunchConfigDialog extends JDialog {
 				}
 				if (newList != null) {
 					gameServersList.remove(selectedIndex);
-					changes.put("argonms.gui.game.run", newList);
-					applyButton.setEnabled(true);
+					if (!newList.equals(join(m.getConfig().getEnabledGameServers())))
+						changes.put("argonms.gui.game.run", newList);
+					else
+						changes.remove("argonms.gui.game.run");
+					applyButton.setEnabled(!changes.isEmpty());
 				}
 			}
 		});
@@ -659,28 +748,61 @@ public class LaunchConfigDialog extends JDialog {
 					String newList = null;
 					if (prevChange == null) {
 						if (!contains(m.getConfig().getEnabledGameServers(), serverId))
-							newList = createListWithAddition(m.getConfig().getEnabledGameServers(), serverId);
+							newList = joinWithAddition(m.getConfig().getEnabledGameServers(), serverId);
 					} else {
-						boolean allowed = true;
-						for (String id : prevChange.split(",")) {
-							if (id.equals(text)) {
-								allowed = false;
-								break;
+						newList = "";
+						boolean allowed = true, inserted = false;
+						if (!prevChange.isEmpty()) {
+							for (int i = 0, j = prevChange.indexOf(',') != -1 ? prevChange.indexOf(',') : prevChange.length(); allowed && i != prevChange.length() + 1; i = j + 1, j = prevChange.indexOf(',', i) != -1 ? prevChange.indexOf(',', i) : prevChange.length()) {
+								String element = prevChange.substring(i, j);
+								int delta = text.compareTo(element);
+								if (delta == 0) {
+									allowed = false;
+								} else {
+									if (!inserted && delta < 0) {
+										newList += text + ",";
+										inserted = true;
+									}
+									newList += element + ",";
+								}
 							}
 						}
-						if (allowed)
-							newList = (prevChange.length() > 0 ? prevChange + ',' : "") + text;
+						if (!allowed)
+							newList = null;
+						else if (inserted)
+							newList = newList.substring(0, newList.length() - 1);
+						else
+							newList += text;
 					}
 					if (newList != null) {
 						try {
-							String selected = m.getConfig().getGameServerPropertiesPath(serverId);
+							String selected = changes.get("argonms.gui.game." + text + ".properties");
+							if (selected == null)
+								selected = m.getConfig().getGameServerPropertiesPath(serverId);
 							if (selected == null)
 								selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your game" + text + ".properties file");
 							if (selected != null) {
-								gameServersList.addElement(text);
-								changes.put("argonms.gui.game.run", newList);
-								changes.put("argonms.gui.game." + text + ".properties", selected);
-								applyButton.setEnabled(true);
+								if (!selected.equals(m.getConfig().getGameServerPropertiesPath(serverId)))
+									changes.put("argonms.gui.game." + text + ".properties", selected);
+								else
+									changes.remove("argonms.gui.game." + text + ".properties");
+								applyButton.setEnabled(!changes.isEmpty());
+
+								if (!newList.equals(join(m.getConfig().getEnabledGameServers())))
+									changes.put("argonms.gui.game.run", newList);
+								else
+									changes.remove("argonms.gui.game.run");
+								applyButton.setEnabled(!changes.isEmpty());
+
+								boolean inserted = false;
+								for (int i = 0; i < gameServersList.size() && !inserted; i++) {
+									if (text.compareTo(gameServersList.get(i).toString()) < 0) {
+										gameServersList.insertElementAt(text, i);
+										inserted = true;
+									}
+								}
+								if (!inserted)
+									gameServersList.addElement(text);
 							}
 						} catch (IOException ex) {
 							System.err.println("Error in selecting game" + text + ".properties");
@@ -755,7 +877,7 @@ public class LaunchConfigDialog extends JDialog {
 		return constructSimplePathSubPanel("Classpath", "Classpath:", textbox, m.getConfig().getClasspath(), new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JDialog d = new ClasspathDialog();
+				JDialog d = new ClasspathDialog(textbox);
 				d.setResizable(false);
 				d.pack();
 				d.setVisible(true);
@@ -775,8 +897,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForDirectory(LaunchConfigDialog.this, "Select your WZ data folder");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.wz.location", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getWzPath()))
+							changes.put("argonms.gui.wz.location", selected);
+						else
+							changes.remove("argonms.gui.wz.location");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting WZ folder");
@@ -804,8 +929,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForDirectory(LaunchConfigDialog.this, "Select your scripts folder");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.scripts.location", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getScriptsPath()))
+							changes.put("argonms.gui.scripts.location", selected);
+						else
+							changes.remove("argonms.gui.scripts.location");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting scripts folder");
@@ -833,8 +961,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your db.properties file");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.database.properties", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getDatabasePropertiesPath()))
+							changes.put("argonms.gui.database.properties", selected);
+						else
+							changes.remove("argonms.gui.database.properties");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting db.properties");
@@ -862,8 +993,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForPropsFile(LaunchConfigDialog.this, "Select your logging.properties file");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.logger.properties", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getLoggerPropertiesPath()))
+							changes.put("argonms.gui.logger.properties", selected);
+						else
+							changes.remove("argonms.gui.logger.properties");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting logging.properties");
@@ -891,8 +1025,11 @@ public class LaunchConfigDialog extends JDialog {
 					String selected = m.getConfig().promptForTextFile(LaunchConfigDialog.this, "Select your macbanblacklist.txt file");
 					if (selected != null) {
 						textbox.setText(selected);
-						changes.put("argonms.gui.cheattracker.macbanblacklist", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getMacBanBlacklistPath()))
+							changes.put("argonms.gui.cheattracker.macbanblacklist", selected);
+						else
+							changes.remove("argonms.gui.cheattracker.macbanblacklist");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				} catch (IOException ex) {
 					System.err.println("Error in selecting macbanblacklist.txt");
@@ -1002,8 +1139,11 @@ public class LaunchConfigDialog extends JDialog {
 								"Unsaved Changes", JOptionPane.YES_NO_CANCEL_OPTION);
 						switch (option) {
 							case JOptionPane.YES_OPTION:
-								changes.put("argonms.gui.game." + id + ".properties", selected);
-								applyButton.setEnabled(true);
+								if (!selected.equals(m.getConfig().getGameServerPropertiesPath(id)))
+									changes.put("argonms.gui.game." + id + ".properties", selected);
+								else
+									changes.remove("argonms.gui.game." + id + ".properties");
+								applyButton.setEnabled(!changes.isEmpty());
 								dispose();
 								break;
 							case JOptionPane.NO_OPTION:
@@ -1050,8 +1190,11 @@ public class LaunchConfigDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (selected != null) {
-						changes.put("argonms.gui.game." + id + ".properties", selected);
-						applyButton.setEnabled(true);
+						if (!selected.equals(m.getConfig().getGameServerPropertiesPath(id)))
+							changes.put("argonms.gui.game." + id + ".properties", selected);
+						else
+							changes.remove("argonms.gui.game." + id + ".properties");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 					dispose();
 				}
@@ -1079,13 +1222,18 @@ public class LaunchConfigDialog extends JDialog {
 		/**
 		 * This method is not thread-safe. It must be called from the Swing EDT.
 		 */
-		public ClasspathDialog() {
+		public ClasspathDialog(final JTextField textbox) {
 			super(LaunchConfigDialog.this, "Classpath Modifier", true);
 
 			setLayout(new GridBagLayout());
 
 			final DefaultListModel pathList = new DefaultListModel();
-			final String[] originalPaths = m.getConfig().getClasspathElements();
+			final String[] originalPaths;
+			String newList = changes.get("argonms.gui.bin.classpath");
+			if (newList != null)
+				originalPaths = newList.split(",");
+			else
+				originalPaths = m.getConfig().getClasspathElements();
 			for (String bin : originalPaths)
 				pathList.addElement(bin);
 			final JList paths = new JList(pathList);
@@ -1106,7 +1254,7 @@ public class LaunchConfigDialog extends JDialog {
 					String newList = null;
 					String prevChange = changes.get("argonms.gui.bin.classpath");
 					if (prevChange == null) {
-						newList = createListWithExclusion(originalPaths, selected);
+						newList = joinWithExclusion(originalPaths, selected);
 					} else {
 						int start = prevChange.indexOf(selected);
 						int end = start + selected.length();
@@ -1117,9 +1265,13 @@ public class LaunchConfigDialog extends JDialog {
 						newList = prevChange.substring(0, start) + prevChange.substring(end, prevChange.length());
 					}
 					if (newList != null) {
+						textbox.setText(Configuration.joinClasspath(newList.split(",")));
 						pathList.remove(selectedIndex);
-						changes.put("argonms.gui.bin.classpath", newList);
-						applyButton.setEnabled(true);
+						if (!newList.equals(join(m.getConfig().getClasspathElements())))
+							changes.put("argonms.gui.bin.classpath", newList);
+						else
+							changes.remove("argonms.gui.bin.classpath");
+						applyButton.setEnabled(!changes.isEmpty());
 					}
 				}
 			});
@@ -1128,16 +1280,28 @@ public class LaunchConfigDialog extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						String[] selected = m.getConfig().promptForClasspath(ClasspathDialog.this, "Append to classpath");
-						String newList = changes.get("argonms.gui.bin.classpath");
-						if (newList == null)
-							newList = createListWithAddition(originalPaths, null);
 						if (selected != null) {
-							for (String bin : selected) {
-								newList += (newList.length() > 0 ? "," : "") + bin;
-								pathList.addElement(bin);
-							}
-							changes.put("argonms.gui.bin.classpath", newList);
-							applyButton.setEnabled(true);
+							String[] start;
+							String newList = changes.get("argonms.gui.bin.classpath");
+							if (newList != null)
+								start = newList.split(",");
+							else
+								start = m.getConfig().getClasspathElements();
+							TreeSet<String> combinedSet = new TreeSet<String>();
+							combinedSet.addAll(Arrays.asList(start));
+							combinedSet.addAll(Arrays.asList(selected));
+							String[] combined = combinedSet.toArray(new String[combinedSet.size()]);
+							newList = join(combined);
+							if (!newList.equals(join(m.getConfig().getClasspathElements())))
+								changes.put("argonms.gui.bin.classpath", newList);
+							else
+								changes.remove("argonms.gui.bin.classpath");
+							applyButton.setEnabled(!changes.isEmpty());
+
+							textbox.setText(Configuration.joinClasspath(combined));
+							pathList.clear();
+							for (String s : combined)
+								pathList.addElement(s);
 						}
 					} catch (IOException ex) {
 						System.err.println("Error in selecting classpath");

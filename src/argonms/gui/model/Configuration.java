@@ -650,10 +650,7 @@ public class Configuration {
 	}
 
 	public String getClasspath() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < classPath.length; i++)
-			sb.append(classPath[i]).append(Environment.LIST_DELIMIT);
-		return sb.substring(0, sb.length() - Environment.LIST_DELIMIT.length());
+		return joinClasspath(classPath);
 	}
 
 	public String[] getClasspathElements() {
@@ -714,5 +711,12 @@ public class Configuration {
 
 	public void setLookAndFeelClass(String className) {
 		lookAndFeel = className;
+	}
+
+	public static String joinClasspath(String[] elements) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < elements.length; i++)
+			sb.append(elements[i]).append(Environment.LIST_DELIMIT);
+		return sb.substring(0, sb.length() - Environment.LIST_DELIMIT.length());
 	}
 }
